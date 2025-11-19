@@ -1,0 +1,1 @@
+[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"add1","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"add2","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"check","outputs":[],"stateMutability":"nonpayable","type":"function"}]

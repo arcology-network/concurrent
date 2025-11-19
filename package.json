@@ -1,0 +1,26 @@
+{
+  "name": "@arcologynetwork/concurrentlib",
+  "description": "This API enables deterministic concurrent smart contract development on the Arcology Network.",
+  "version": "2.2.0",
+  "files": [
+    "/contracts/**/*.sol"
+  ],
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arcology-network/concurrent.git"
+  },
+  "keywords": [
+    "parallel execution",
+    "solidity",
+    "evm",
+    "ethereum",
+    "smart contracts",
+    "arcology network",
+    "rollup",
+    "l2"
+  ],
+  "author": "Arcology Network",
+  "license": "MIT",
+  "homepage": "https://arcology.network/"
+}

@@ -1,2 +1,74 @@
-# concurrent
-A suite of Solidity APIs customized for concurrent programming tasks on Arcology.
+<div align="left">
+  <img src="./img/arcology-logo-text-dark-transparent.svg" alt="Your Image Alt Text" height="120px" align="center"/>
+</div>
+
+<h1> Concurrent APIs <img align="center" height="32" src="./img/code-file.svg">  </h1>
+
+Solidity, the programming language used to develop smart contracts on the Ethereum platform, was not initially designed for concurrent use, so it does not include the features and capabilities necessary for efficient concurrent programming. 
+
+[Arcology Network](https://arcology.network) offers a suite of Solidity APIs customized for concurrent programming tasks. This package includes the Solidity APIs for  smart contract developers to fully utilize the power of **Arcology's parallel execution** capabilities. 
+
+>>Please be aware that all the libraries in the package are specifically designed for Arcology Network only. They are not going to bring any benefits to Ethereum or other blockchain platforms.
+
+<h2> Installation <img align="center" height="32" src="./img/cloud-download.svg">  </h2>
+
+``` shell
+$ npm install @arcologynetwork/concurrentlib
+```
+
+<h2> Usage <img align="center" height="32" src="./img/ruler-cross-pen.svg">  </h2>
+
+Once installed, you can use the contracts in the library by importing them.
+
+### Example
+
+The following example demonstrates how to use the concurrentlib to parallelize a simple smart contract. Arcology has a set of concurrent data structures and variables that allow concurrent manipulations. Below is an example of that. 
+
+#### Simple Contract
+
+The following is an example of a simple smart contract that allows users to like a post. The simplest version of the contract is shown below. When the `like()` function is called, the `likes` counter is incremented by 1.
+
+This sequential-only implementation does not support concurrent execution. If multiple users call the `like()` function at the same time, the `likes` counter may be incremented incorrectly, resulting in an inconsistent final state.
+
+```solidity
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity >=0.8.0 <0.9.0;
+
+contract Like {
+    uint public likes;
+
+    function like() public {
+        likes += 1;
+    }    
+}
+```
+
+#### Parallelized Version
+
+In the parallelized version, the `likes` is replaced with a `U256Cumulative` variable from the `arcologynetwork/contracts/concurrentlib/commutative/U256Cum.sol` library. The variable allows concurrent increment and decrement operations. Now, the `like()` function can be called concurrently by multiple transactions.
+
+```solidity
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity >=0.8.0 <0.9.0;
+import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
+
+contract Like {
+    U256Cumulative likes = new U256Cumulative(0, type(uint256).max);
+
+    function like() public {
+        likes.add(1);
+    }    
+}
+```
+
+<h2> Learn More  <img align="center" height="32" src="./img/info.svg">  </h2>
+
+You can find more examples in the [developer's guide](https://doc.arcology.network/arcology-concurrent-programming-guide/).
+
+<h2> License  <img align="center" height="32" src="./img/copyright.svg">  </h2>
+
+Arcology's concurrent lib is released under the MIT License.
+
+<h2> Disclaimer  <img align="center" height="32" src="./img/warning.svg">  </h2>
+
+Arcology's concurrent lib is made available under the MIT License, which disclaims all warranties in relation to the project and which limits the liability of those that contribute and maintain the project. You acknowledge that you are solely responsible for any use of the Contracts and you assume all risks associated with any such use.
