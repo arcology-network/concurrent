@@ -1,9 +1,13 @@
 {
   "name": "@arcologynetwork/concurrentlib",
   "description": "This API enables deterministic concurrent smart contract development on the Arcology Network.",
-  "version": "2.2.0",
+  "version": "2.2.2",
   "files": [
-    "/contracts/**/*.sol"
+    "contracts",
+    "img",
+    "test",
+    "LICENSE",
+    "README.md"
   ],
   "scripts": {},
   "repository": {
