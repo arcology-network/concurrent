@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0;
 
-import "./Multiprocess.sol";
-import "../array/Bool.sol";
-import "../commutative/U256Cum.sol";
+import "../../contracts/multiprocess/Multiprocess.sol";
+import "../../contracts/crdt/array/Bool.sol";
+import "../../contracts/crdt/commutative/U256Cum.sol";
 
 contract MpBenchmarking {
     /**
