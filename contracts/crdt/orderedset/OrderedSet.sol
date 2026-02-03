@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0;
 
-import "../core/Const.sol";
-import "../core/Gateway.sol";
-// import "../runtime/Runtime.sol";
+import "../core/Primitive.sol";
 
 /**
  * @author Arcology Network

@@ -2,15 +2,15 @@ module github.com/arcology-network/concurrent
 
 go 1.22
 
-// replace github.com/arcology-network/scheduler => ../scheduler/
+replace github.com/arcology-network/scheduler => ../scheduler/
 
 replace github.com/ethereum/go-ethereum v1.14.8 => github.com/arcology-network/concurrent-evm v0.0.0-20250714082425-8009ff40403f
 
-// replace github.com/arcology-network/common-lib => ../common-lib/
+replace github.com/arcology-network/common-lib => ../common-lib/
 
-// replace github.com/arcology-network/state-engine => ../state-engine/
+replace github.com/arcology-network/state-engine => ../state-engine/
 
-// replace github.com/arcology-network/eu => ../eu/
+replace github.com/arcology-network/eu => ../eu/
 
 require (
 	github.com/ethereum/go-ethereum v1.14.8 // indirect

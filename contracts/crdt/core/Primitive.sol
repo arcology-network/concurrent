@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0;
 import "../../runtime/Runtime.sol";
-import "./Gateway.sol";
-import "./Const.sol";
+import "../../runtime/Gateway.sol";
+import "../../runtime/Const.sol";
+
 /**
  * @author Arcology Network
  * @title Base Concurrent Container
@@ -19,9 +20,9 @@ import "./Const.sol";
  *
  *      Delopers should exercise caution when accessing the container concurrently to avoid conflicts.
  */
-contract Base is Gateway{    
+abstract contract Base is Gateway{    
     /**
-     * @notice Constructor to initiate communication with the external contract.
+     * @notice Constructor to initiate communication with the external contract. Abstract base contracts only. Do not deploy directly.
      * @param typeID The type ID of the concurrent container.
      * @param isBlockBound If true, the content of the container will be cleared after each block.
      */

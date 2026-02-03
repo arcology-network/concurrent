@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0;
 
-import "../crdt/core/Const.sol"; 
 import "../crdt/core/Primitive.sol";
-import "../crdt/core/Gateway.sol";
-import "../runtime/Runtime.sol";
+
 /**
  * @author Arcology Network
  * @title Multiprocess Container
@@ -50,6 +48,11 @@ contract Multiprocess is Gateway(Const.BYTES, Const.MULTIPROCESSOR_ADDR, false) 
     function run() public returns(bool, bytes memory){       
         (bool success, bytes memory data) = address(API).call(abi.encodeWithSignature("invoke(bytes)", abi.encodePacked(numProcesses))); 
         (success,) = eval(abi.encodeWithSignature("clear()"));
+        return (success, data);
+    }
+
+    function clear() public returns(bool, bytes memory){       
+        (bool success, bytes memory data) = eval(abi.encodeWithSignature("clear()"));
         return (success, data);
     }
 }

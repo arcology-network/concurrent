@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0;
 
-import "../../crdt/core/Const.sol"; 
 import "../../crdt/core/Primitive.sol";
 
 /**
@@ -49,7 +48,6 @@ contract Address is Base {
             }
         }
         return address(uint160(resultAdr)); 
-
     }
 
     /**
