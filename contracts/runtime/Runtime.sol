@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0;
 
+import "./Const.sol";
+
 /**
  * @author Arcology Network
  * @title Runtime Library
@@ -14,7 +16,7 @@ library Runtime {
      * @return args The pseudo-process ID (PID) returned by the external contract.
      */
     function pid() internal returns(bytes memory) {
-        (,bytes memory random) = address(0xa0).call(abi.encodeWithSignature("pid()"));     
+        (,bytes memory random) = _call(abi.encodeWithSignature("pid()"));
         return random;
     }
 
@@ -24,7 +26,7 @@ library Runtime {
      * @return The pseudo-random UUID returned by the external contract.
      */
     function uuid() internal returns(bytes memory) {
-        (,bytes memory id) = address(0xa0).call(abi.encodeWithSignature("uuid()"));     
+        (,bytes memory id) = _call(abi.encodeWithSignature("uuid()"));
         return id;
     }
   
@@ -33,7 +35,7 @@ library Runtime {
      * @return The result of the custom operation.
      */
     function eval(string memory func, bytes memory data) internal returns(bool, bytes memory) {
-        return address(0xa0).call(abi.encodeWithSignature(func, data)); 
+        return _call(abi.encodeWithSignature(func, data));
     }
 
     /**
@@ -42,7 +44,7 @@ library Runtime {
     */
     function setParallelism(string memory funcName, address addr, bytes4[] memory others, uint64 parallelism) internal returns(bool) {
         bytes4 funSign = bytes4(keccak256(bytes(funcName)));
-        (bool success,) = address(0xa0).call(abi.encodeWithSignature("setParallelism(bytes4,address,bytes4[],uint64)", funSign, addr, others, parallelism));
+        (bool success,) = _call(abi.encodeWithSignature("setParallelism(bytes4,address,bytes4[],uint64)", funSign, addr, others, parallelism));
         return success;
     }
  
@@ -51,7 +53,7 @@ library Runtime {
      * @return The number of concurrent instances.
      */
     function isInDeferred() internal view returns(bool) {
-        (,bytes memory data) = address(0xa0).staticcall(abi.encodeWithSignature("isInDeferred()"));
+        (,bytes memory data) = _staticcall(abi.encodeWithSignature("isInDeferred()"));
         return abi.decode(data, (bool));  
     }
 
@@ -61,7 +63,15 @@ library Runtime {
      */
     function defer(string memory funName, uint64 prepaidGas) internal returns(bool) {
         bytes4 funSign = bytes4(keccak256(bytes(funName)));
-        (bool successful,) = address(0xa0).call(abi.encodeWithSignature("defer(bytes4,uint64)", funSign, prepaidGas));
+        (bool successful,) = _call(abi.encodeWithSignature("defer(bytes4,uint64)", funSign, prepaidGas));
         return successful;  
+    }
+
+    function _call(bytes memory payload) private returns (bool, bytes memory) {
+        return Const.RUNTIME_ADDR.call(payload);
+    }
+
+    function _staticcall(bytes memory payload) private view returns (bool, bytes memory) {
+        return Const.RUNTIME_ADDR.staticcall(payload);
     }
 }
