@@ -6,34 +6,14 @@ import "../../../contracts/runtime/Debug.sol";
 import "../../../contracts/multiprocess/Multiprocess.sol";
 import "../../../contracts/crdt/scalar/U256Cum.sol";
 
-// contract NumConcurrentInstanceTest  {   
-//         receive() external payable {}
-//     // fallback() external payable {}
-//     U256Cumulative value = new U256Cumulative(1, 100);
-
-//     function call() public {
-//         Multiprocess mp = new Multiprocess(2); // 2 Threads
-//         mp.addJob(4000000, 11, address(this), abi.encodeWithSignature("init(uint256)", 1)); // Will require about 1.5M gas
-//         mp.addJob(4000000, 11, address(this), abi.encodeWithSignature("init(uint256)", 2));
-//         mp.run();
-//         require(value.get() == 3);
-//     }
-
-//     function init(uint256 v) public payable  {
-//         if (Runtime.instances(address(this), bytes4(keccak256(bytes("init(uint256)")))) == 2) {
-//             value.add(v);    
-//         }
-//     }
-// }
-
 contract DeferredTest  {
     U256Cumulative value = new U256Cumulative(1, 100);
 
     constructor () payable {
-        Runtime.defer("init()", 500222);  
+        Runtime.defer("testInit()", 500222);  
     }
 
-    function init() public {
+    function testInit() public {
         require(!Runtime.isInDeferred());
     }
 }
@@ -43,6 +23,8 @@ contract SequentializerTest  {
     address addr2 = 0x2222222220123456789012345678901234567890;
     address addr3 = 0x3333337890123456789012345678901234567890;
     address addr4 = 0x4444444890123456789012345678901234567890;
+    bool private parallelismOk;
+    bool private deferOk;
 
     constructor () {
         bytes4[] memory otherFuncs = new bytes4[](3);
@@ -50,15 +32,20 @@ contract SequentializerTest  {
         otherFuncs[1] = 0x02020202;   
         otherFuncs[2] = 0x03030303;       
 
-        // The init() function of the current contract cannot be called in parallel with 
+        // The testInit() function of the current contract cannot be called in parallel with 
         // the otherFuncs functions of the addr1 contract.
-        require(Runtime.setParallelism("init()", addr1, otherFuncs, 1));
-        require(Runtime.defer("init()", 600000));
+        parallelismOk = Runtime.setParallelism("testInit()", addr1, otherFuncs, 1);
+        deferOk = Runtime.defer("testInit()", 600000);
     }
 
-    function init() public {}
-    function seq() public {}
-    function def() public {}
+    function testSetup() public {
+        require(parallelismOk);
+        require(deferOk);
+    }
+
+    function testInit() public {}
+    function testSeq() public {}
+    function testDef() public {}
 }
 
 contract ParallizerTest  {
@@ -66,6 +53,8 @@ contract ParallizerTest  {
     address addr2 = 0x2222222220123456789012345678901234567890;
     address addr3 = 0x3333337890123456789012345678901234567890;
     address addr4 = 0x4444444890123456789012345678901234567890;
+    bool private parallelismOk;
+    bool private deferOk;
 
     constructor () {
         bytes4[] memory otherFuncs = new bytes4[](3);
@@ -73,18 +62,23 @@ contract ParallizerTest  {
         otherFuncs[1] = 0x02020202;   
         otherFuncs[2] = 0x03030303;       
 
-        // Only the init() function of the current contract can be called in parallel with the others.
-        require(Runtime.setParallelism("init()", addr1, otherFuncs, 2));
-        require(Runtime.defer("def()", 111));
+        // Only the testInit() function of the current contract can be called in parallel with the others.
+        parallelismOk = Runtime.setParallelism("testInit()", addr1, otherFuncs, 2);
+        deferOk = Runtime.defer("testDef()", 111);
     }
 
-    function init() public {}
-    function seq() public {}
-    function def() public {}
+    function testSetup() public {
+        require(parallelismOk);
+        require(deferOk);
+    }
+
+    function testInit() public {}
+    function testSeq() public {}
+    function testDef() public {}
 }
 
 contract PrintTest  {
-    constructor () {
+    function testPrint() public {
         // Runtime.print();
         Debug.print("Test");
     }

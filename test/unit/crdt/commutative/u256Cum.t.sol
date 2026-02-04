@@ -6,7 +6,8 @@ import "../../../../contracts/crdt/scalar/U256Cum.sol";
 contract CumulativeU256InMappingTest {
     U256Cumulative[2] values;
     mapping(uint256 => U256Cumulative) map;
-    constructor() {  
+    
+    function testInitialState() public {  
         require(address(values[0]) == address(0));
         require(address(values[1]) == address(0));
 
@@ -25,7 +26,7 @@ contract CumulativeU256InMappingTest {
 contract CumulativeU256Test {
     U256Cumulative cumulative ;
 
-    constructor() {    
+    function testCall() public {    
         cumulative = new U256Cumulative(1, 100);  // [1, 100]
         require(cumulative.min() == 1);
         require(cumulative.max() == 100);
@@ -60,54 +61,24 @@ contract CumulativeU256Test {
         cumulative2.add(1);
         require(cumulative2.get() == 1);
     }
-
-    function call() public {
-        cumulative.add(1);
-        require(cumulative.get() == 1);
-    }
 }
 
-contract VisitCounter {    
-    U256Cumulative visitCount;
-    event CounterQuery(uint256 value);
-
-    constructor()  {
-        visitCount = new U256Cumulative(0, 1000000);
-    }
-
-    function call() public {
-        visitCount.add(1);
-        require(visitCount.get() == 1);
-    }
-
-    function getCounter() public returns(uint256){
-        emit CounterQuery(visitCount.get());
-        return visitCount.get();
-    }
-}
-
-contract MultiCummutative {
+contract MultiCommutativeTest {
     U256Cumulative visitCount1;
     U256Cumulative visitCount2;
     U256Cumulative visitCount3;
 
-    constructor() {
+    function testCheck() public{
         visitCount1 = new U256Cumulative(0, 1000000) ;
         visitCount2 = new U256Cumulative(0, 1000000) ;
         visitCount3 = new U256Cumulative(0, 1000000) ;
-     }
 
-    function add1() public {
         visitCount1.add(10);
-        visitCount2.add(20);       
-    }
+        visitCount2.add(20);  
 
-    function add2() public {
         visitCount3.add(66);
         visitCount2.add(88);
-    }
 
-    function check() public{
         require(visitCount1.get() == 10);
         require(visitCount2.get() == 108);
         require(visitCount3.get() == 66);

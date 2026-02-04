@@ -6,7 +6,7 @@ import "../../../../contracts/crdt/array/U256Cum.sol";
 contract U256CumArrayTest {
     U256Cum container = new U256Cum();
 
-    constructor() {    
+    function testInitialState() public {    
         require(container.push(17, 17, 111)); 
         require(container.push(111, 17, 111)); 
 
@@ -50,7 +50,7 @@ contract U256CumArrayTest {
 contract U256CumArrayTestTransient {
     U256Cum container = new U256Cum();
 
-    constructor() {    
+    function testInitialState() public {    
         require(container.push(17, 17, 111)); 
         require(container.push(111, 17, 111)); 
     }

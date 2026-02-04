@@ -13,8 +13,8 @@ import "../../runtime/Const.sol";
  *      linear access.
  *
  *      The contract serves as a hybrid data structure, functioning as a map set behind the scenes.
- *      The order of elements is formed when any timing-dependent functions like "delLast()" or "nonNilCount()"
- *      are called. However, performing concurrent "delLast()" or getting the length is not recommended in
+ *      The order of elements is formed when any timing-dependent functions like "pop()" or "nonNilCount()"
+ *      are called. However, performing concurrent "pop()" or getting the length is not recommended in
  *      a parallel environment, as these operations are timing-independent and may lead to conflicts. 
  *      Transactions resulting conflicts will be reverted to protect the state consistency.
  *
@@ -63,8 +63,8 @@ abstract contract Base is Gateway{
      * @notice Removes and returns the last element of the container.
      * @return The data of the removed element.
      */
-    function _delLast() public virtual returns(bytes memory) {
-        (,bytes memory data) = eval(abi.encodeWithSignature("delLast()"));
+    function _pop() public virtual returns(bytes memory) {
+        (,bytes memory data) = eval(abi.encodeWithSignature("pop()"));
         return data;
     }
     

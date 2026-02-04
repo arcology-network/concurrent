@@ -6,7 +6,7 @@ import "../../../../contracts/crdt/map/AddressU256Cum.sol";
 
 contract AddressU256CumMapTest {
     AddressU256CumMap map = new AddressU256CumMap();
-    constructor() {     
+    function testInitialState() public {     
         address addr1 = 0x1111111110123456789012345678901234567890;
         address addr2 = 0x2222222220123456789012345678901234567890;
         address addr3 = 0x3333337890123456789012345678901234567890;
@@ -88,54 +88,3 @@ contract AddressU256CumMapTest {
         // require(map.get(addr3) == 0); 
     }
 }
-
-// contract AddressU256CumMapConcurrentTest {
-//     AddressU256CumMap map = new AddressU256CumMap();
-//     function call() public {     
-//         address addr1 = 0x1111111110123456789012345678901234567890;
-//         address addr2 = 0x2222222220123456789012345678901234567890;
-//         address addr3 = 0x3333337890123456789012345678901234567890;
-//         address addr4 = 0x4444444890123456789012345678901234567890;
-
-//         Multiprocess mp = new Multiprocess(2); 
-//         mp.addJob(500000, address(this), abi.encodeWithSignature("setter(address,uint256)", addr1, 11));
-//         mp.addJob(500000, address(this), abi.encodeWithSignature("setter(address,uint256)", addr2, 22));
-//         mp.addJob(500000, address(this), abi.encodeWithSignature("setter(address,uint256)", addr3, 33));
-//         mp.run();
-
-//         require(map.exist(addr1)); 
-//         require(map.exist(addr2)); 
-//         require(map.exist(addr3)); 
-//         require(!map.exist(addr4)); 
-
-//         require(map.get(addr1) == 11); 
-//         require(map.get(addr2) == 22); 
-//         require(map.get(addr3) == 33); 
-
-//         require(map.valueAt(0) == 11); 
-//         require(map.valueAt(1) == 22); 
-//         require(map.valueAt(2) == 33); 
-
-//         require(map.keyAt(0) == addr1); 
-//         require(map.keyAt(1) == addr2); 
-//         require(map.keyAt(2) == addr3); 
-
-//         map.set(addr1, 100);
-//         map.set(addr2, 100);
-//         map.set(addr3, 100);
-
-//         require(map.valueAt(0) == 110); 
-//         require(map.valueAt(1) == 122); 
-//         require(map.valueAt(2) == 133); 
-
-//         map.del(addr1);
-//         map.del(addr2);
-//         map.del(addr3);
-//         require(map.nonNilCount() == 0); 
-//     }
-
-//     function setter(address addr, uint256 v)  public {
-//         map.set(addr, v);
-//     }
-// }
-

@@ -24,8 +24,8 @@ contract Bytes is Base {
      * @notice Remove and return the last bytes data element from the concurrent array.
      * @return The last bytes data element from the array.
      */
-    function delLast() public virtual returns(bytes memory) { 
-        return Base._delLast();  
+    function pop() public virtual returns(bytes memory) { 
+        return Base._pop();  
     }
 
     /**

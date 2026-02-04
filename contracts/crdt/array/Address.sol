@@ -24,8 +24,8 @@ contract Address is Base {
      * @notice Remove and return the last address element from the concurrent array.
      * @return The last address element from the array.
      */
-    function delLast() public virtual returns(address) { 
-        bytes memory rawdata=Base._delLast();
+    function pop() public virtual returns(address) { 
+        bytes memory rawdata=Base._pop();
         bytes20 resultAdr;
         for (uint i = 0; i < 20; i++) {
             resultAdr |= bytes20(rawdata[i]) >> (i * 8); 

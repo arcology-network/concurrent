@@ -37,7 +37,7 @@ contract AddressUint256Map is Base {
      * @return value The address value associated with the key.
      */
     function get(address k) public virtual returns(uint256 value){ 
-        (bool success, bytes memory data)=Base._get(abi.encodePacked(k));
+        (bool success, bytes memory data) = Base._get(abi.encodePacked(k));
         if(success)
             return uint256(abi.decode(data, (bytes32)));     
         return uint256(0);    

@@ -24,8 +24,8 @@ contract Bool is Base {
      * @notice Remove and return the last boolean element from the concurrent array.
      * @return The last boolean element from the array.
      */
-    function delLast() public virtual returns(bool) { 
-        return abi.decode(Base._delLast(), (bool));  
+    function pop() public virtual returns(bool) { 
+        return abi.decode(Base._pop(), (bool));  
     }
 
     /**

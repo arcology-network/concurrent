@@ -11,10 +11,10 @@ import "../../../contracts/crdt/map/AddressU256Cum.sol";
 contract U256CumulativeParallelInitTest {
     U256Cumulative[] containers = new U256Cumulative[](2);
 
-    function call() public {  
+    function testCall() public {  
         Multiprocess mp = new Multiprocess(2);
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("init(uint256)", 0)); // Will require about 1.5M gas
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("init(uint256)", 1));
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testInit(uint256)", 0)); // Will require about 1.5M gas
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testInit(uint256)", 1));
         (bool success, bytes memory encoded) = mp.run();
         require(success);
 
@@ -31,7 +31,7 @@ contract U256CumulativeParallelInitTest {
         // require(containers[1].get() == 12);
     }
 
-    function init(uint256 idx) public returns(uint256) { 
+    function testInit(uint256 idx) public returns(uint256) { 
         containers[idx] = new U256Cumulative(1, 100);
         containers[idx].add(idx + 11);       
         return idx + 11;
@@ -43,15 +43,15 @@ contract U256ParallelInitTest {
 
     function testCall() public {  
         // Multiprocess mp = new Multiprocess(2);
-        // mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("init(uint256)", 0)); // Will require about 1.5M gas
-        // mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("init(uint256)", 1));
+        // mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testInit(uint256)", 0)); // Will require about 1.5M gas
+        // mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testInit(uint256)", 1));
         // mp.run();
 
         // require(containers[0].nonNilCount() == 1);
         // require(containers[1].nonNilCount() == 1);
     }
 
-    function init(uint256 idx) public  { 
+    function testInit(uint256 idx) public  { 
         containers[idx] = new U256();
         containers[idx].push(idx);        
     }
@@ -61,11 +61,11 @@ contract U256ParallelInitTest {
 contract U256ParallelInitTestExeceed {
     U256[] containers = new U256[](3);
 
-    function call() public {  
+    function testCall() public {  
         Multiprocess mp = new Multiprocess(2);
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("init(uint256)", 0)); // Will require about 1.5M gas
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("init(uint256)", 1));
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("init(uint256)", 2));
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testInit(uint256)", 0)); // Will require about 1.5M gas
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testInit(uint256)", 1));
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testInit(uint256)", 2));
         mp.run();
 
         require(containers[0].nonNilCount() == 1);
@@ -73,7 +73,7 @@ contract U256ParallelInitTestExeceed {
         require(containers[2].nonNilCount() == 1);
     }
 
-    function init(uint256 idx) public  { 
+    function testInit(uint256 idx) public  { 
         containers[idx] = new U256();
         containers[idx].push(idx);        
     }
@@ -82,54 +82,54 @@ contract U256ParallelInitTestExeceed {
 contract U256ParallelPopTest {
     U256 container = new U256();
 
-    function call() public {
+    function testCall() public {
         container.push(1);
         container.push(2);
 
         Multiprocess mp = new Multiprocess(2);
-        mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("delLast()"));
-        mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("delLast()"));
+        mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("testDelLast()"));
+        mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("testDelLast()"));
         mp.run();
 
         require(container.nonNilCount() == 1);
     }
 
-    function delLast() public  { 
-        container.delLast();
+    function testDelLast() public  { 
+        container.pop();
     }
 }
 
 contract U256ParallelConflictTest {
     U256 container = new U256();
 
-    constructor() {
+    function setUp() public {
         container.push(uint256(10));
         container.push(uint256(20));
         container.push(uint256(30));
         require(container.nonNilCount() == 3);
     }
 
-    function call() public  {     
-        container.delLast(); 
+    function testCall() public  {     
+        container.pop(); 
         Multiprocess mp = new Multiprocess(1);
-        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("delLast()"));
+        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("testDelLast()"));
         mp.run();
     }
 
-    function get(uint256 idx) public returns(uint256){
+    function testGet(uint256 idx) public returns(uint256){
         return container.get(idx);  
     }
 
-    function delLast() public {
+    function testDelLast() public {
         container.get(1); 
-        // container.delLast();   
+        // container.pop();   
     }
 }
 
 contract U256ParallelTest {
     U256 container = new U256();
 
-    function call() public  { 
+    function testCall() public  { 
         require(container.nonNilCount() == 0); 
     
         container.push(uint256(10));
@@ -138,8 +138,8 @@ contract U256ParallelTest {
         require(container.nonNilCount() == 3);
 
         Multiprocess mp = new Multiprocess(1);
-        mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("push(uint256)", 41));
-        mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("push(uint256)", 51));
+        mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("testPush(uint256)", 41));
+        mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("testPush(uint256)", 51));
         require(container.nonNilCount() == 3);
 
         mp.run();
@@ -152,64 +152,64 @@ contract U256ParallelTest {
         require(container.get(3) == uint256(41));   
         require(container.get(4) == uint256(51));  
  
-        require(container.delLast() == uint256(51));  
+        require(container.pop() == uint256(51));  
         require(container.nonNilCount() == 4);
 
-        mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("get(uint256)", 0));
-        mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("get(uint256)", 1));
+        mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("testGet(uint256)", 0));
+        mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("testGet(uint256)", 1));
         mp.run();
 
 
-        delLast(); // idx == 4
+        testDelLast(); // idx == 4
         require(container.nonNilCount() == 3);
 
-        delLast(); // idx == 3
+        testDelLast(); // idx == 3
         require(container.nonNilCount() == 2);
  
-        // Here should be one conflict. So only one delLast() will take effect.
+        // Here should be one conflict. So only one testDelLast() will take effect.
         
-        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("delLast()"));
-        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("delLast()"));
+        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("testDelLast()"));
+        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("testDelLast()"));
         mp.run();
 
         require(container.nonNilCount() == 1); 
     }
 
-    function push(uint256 v) public{
+    function testPush(uint256 v) public{
         container.push(v);
     }
 
-    function get(uint256 idx) public returns(uint256){
+    function testGet(uint256 idx) public returns(uint256){
         return container.get(idx);  
     }
 
-    function set(uint256 idx, uint256 v) public {
+    function testSet(uint256 idx, uint256 v) public {
         return container.set(idx, v);  
     }
 
-    function delLast() public {
-        container.delLast();   
+    function testDelLast() public {
+        container.pop();   
     }
 }
 
 contract ArrayOfU256ParallelTest {
     U256[] array; 
 
-    constructor() {
+    function setUp() public {
         array = new U256[](2);
         array[0] = new U256();
         array[1] = new U256();
     }
 
-    function call() public  {
+    function testCall() public  {
         Multiprocess mp = new Multiprocess(1);
-        push(0, 11);
-        push(0, 12);
+        testPush(0, 11);
+        testPush(0, 12);
 
-        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("push(uint256,uint256)", 0, 13));
-        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("push(uint256,uint256)", 0, 14));
-        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("push(uint256,uint256)", 1, 51));
-        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("push(uint256,uint256)", 1, 52));
+        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("testPush(uint256,uint256)", 0, 13));
+        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("testPush(uint256,uint256)", 0, 14));
+        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("testPush(uint256,uint256)", 1, 51));
+        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("testPush(uint256,uint256)", 1, 52));
         mp.run();
 
         require(array[0].nonNilCount() == 4);
@@ -224,33 +224,33 @@ contract ArrayOfU256ParallelTest {
         require(array[1].get(1) == 52);
     }
 
-    function push(uint256 id, uint256 v) public{
+    function testPush(uint256 id, uint256 v) public{
         array[id].push(v);
     }
 
-    function get(uint256 id, uint256 idx) public  returns(uint256){
+    function testGet(uint256 id, uint256 idx) public  returns(uint256){
         return array[id].get(idx);  
     }
 
-    function set(uint256 id, uint256 idx, uint256 v) public {
+    function testSet(uint256 id, uint256 idx, uint256 v) public {
         return array[id].set(idx, v);  
     }
 
-    function pop(uint256 id) public {
-        array[id].delLast();  
+    function testPop(uint256 id) public {
+        array[id].pop();  
     }
 }
 
 contract Deployer {
     U256 array; 
 
-    constructor() { 
+    function setUp() public { 
        Multiprocess mp = new Multiprocess(1); 
-       mp.addJob(2500000, 0, address(this), abi.encodeWithSignature("init()"));
+       mp.addJob(2500000, 0, address(this), abi.encodeWithSignature("testInit()"));
        mp.run();
     }
 
-    function init() public {
+    function testInit() public {
         array = new U256();
     }
 }  
@@ -259,17 +259,17 @@ contract ParaAssingmentTest {
     uint256 _1;
     uint256 _2;
     
-    function call() public  { 
+    function testCall() public  { 
        Multiprocess mp = new Multiprocess(2); 
-       mp.addJob(50000, 0, address(this), abi.encodeWithSignature("assigner(uint256)", 0));
-       mp.addJob(50000, 0, address(this), abi.encodeWithSignature("assigner(uint256)", 1));
+       mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testAssigner(uint256)", 0));
+       mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testAssigner(uint256)", 1));
        mp.run();
 
        assert(_1 == 10);
        assert(_2 == 11);
     }
 
-    function assigner(uint256 v)  public {
+    function testAssigner(uint256 v)  public {
         if (v == 0) {
             _1 = v + 10;
             return;
@@ -280,17 +280,17 @@ contract ParaAssingmentTest {
  
 contract ParaNativeArrayAssignmentTest {
     uint256[2] results;
-    function call() public  { 
+    function testCall() public  { 
        Multiprocess mp = new Multiprocess(2); 
-       mp.addJob(50000, 0, address(this), abi.encodeWithSignature("assigner(uint256)", 0));
-       mp.addJob(50000, 0, address(this), abi.encodeWithSignature("assigner(uint256)", 1));
+       mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testAssigner(uint256)", 0));
+       mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testAssigner(uint256)", 1));
        mp.run();
 
        assert(results[0] == 10);
        assert(results[1] == 11);
     }
 
-    function assigner(uint256 v)  public {
+    function testAssigner(uint256 v)  public {
         results[v] = v + 10;
     }
 }  
@@ -298,20 +298,20 @@ contract ParaNativeArrayAssignmentTest {
 contract ParaFixedLengthWithConflictTest {  
     Bool container = new Bool();
      uint256[2] results;
-     function call() public  { 
+     function testCall() public  { 
        results[0] = 100;
        results[1] = 200;
        Multiprocess mp = new Multiprocess(2);
-       mp.addJob(400000, 0, address(this), abi.encodeWithSignature("updater(uint256)", 11));
-       mp.addJob(400000, 0, address(this), abi.encodeWithSignature("updater(uint256)", 33));
-       mp.addJob(400000, 0, address(this), abi.encodeWithSignature("updater(uint256)", 55));
+       mp.addJob(400000, 0, address(this), abi.encodeWithSignature("testUpdater(uint256)", 11));
+       mp.addJob(400000, 0, address(this), abi.encodeWithSignature("testUpdater(uint256)", 33));
+       mp.addJob(400000, 0, address(this), abi.encodeWithSignature("testUpdater(uint256)", 55));
        mp.run();     
        require(results[0] == 111);  // 11 and 33 will be reverted due to conflicts
        require(results[1] == 211); 
        require(container.nonNilCount() == 1); 
     }
 
-    function updater(uint256 num) public {
+    function testUpdater(uint256 num) public {
          results[0] += num;
          results[1] += num;
          container.push(true);
@@ -321,12 +321,12 @@ contract ParaFixedLengthWithConflictTest {
 contract ParaContainerConcurrentPushTest {
     Bool container = new Bool();
     Bool container2 = new Bool();
-    function call() public  { 
+    function testCall() public  { 
        container.push(true);
 
        Multiprocess mp = new Multiprocess(2);
-       mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("appender()"));
-       mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("appender()"));
+       mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
+       mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
        mp.run();
        require(container.nonNilCount() == 3);    
        require(container2.nonNilCount() == 2);   
@@ -335,7 +335,7 @@ contract ParaContainerConcurrentPushTest {
     //    container.push(true);        
     }
 
-    function appender()  public {
+    function testAppender()  public {
        container.push(true);
        container2.push(true);
     }
@@ -344,21 +344,21 @@ contract ParaContainerConcurrentPushTest {
 contract MultiTempParaTest {
     Bool container = new Bool();
     bytes32[2] results;
-    function call() public  { 
+    function testCall() public  { 
        Multiprocess mp = new Multiprocess(2);
-       mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("appender()"));
-       mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("appender()"));
+       mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
+       mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
        mp.run();
        require(container.nonNilCount() == 2);     
 
        Multiprocess mp2 = new Multiprocess(2);
-       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("appender()"));
-       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("appender()"));
+       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
+       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
        mp2.run();
        require(container.nonNilCount() == 4);  
     }
 
-    function appender()  public {
+    function testAppender()  public {
        container.push(true);
     }
 }
@@ -368,14 +368,14 @@ contract MultiGlobalParaSingleInUse {
 
     Multiprocess mp2;
     Multiprocess mp = new Multiprocess(2);
-    function call() public  {  
+    function testCall() public  {  
        mp2 = new Multiprocess(2);
-       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("appender()"));
+       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
        mp2.run();
        require(container.nonNilCount() == 2);    
     }
 
-    function appender()  public {
+    function testAppender()  public {
        container.push(true);
        container.push(true);
     }
@@ -386,17 +386,17 @@ contract MultiprocessConcurrentBool {
     
     Multiprocess mp ; 
     Multiprocess mp2;
-    function call() public  {  
+    function testCall() public  {  
        mp = new Multiprocess(2);
        mp2 = new Multiprocess(2);
-       mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("appender()"));
-       mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("appender()"));
+       mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
+       mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
        mp.run();
        require(container.nonNilCount() == 2);     
       
        mp2 = new Multiprocess(2);
-       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("appender()"));
-       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("appender()"));
+       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
+       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
        mp2.run();
        require(container.nonNilCount() == 4);  
 
@@ -404,7 +404,7 @@ contract MultiprocessConcurrentBool {
        require(container.nonNilCount() == 5);  
     }
 
-    function appender()  public {
+    function testAppender()  public {
        container.push(true);
     }
 }
@@ -412,24 +412,24 @@ contract MultiprocessConcurrentBool {
 contract MultiLocalParaTestWithClear {
     Bool container = new Bool();
     bytes32[2] results;
-    function call() public  { 
+    function testCall() public  { 
        Multiprocess mp = new Multiprocess(2);
-       mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("appender()"));
+       mp.addJob(1000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
        mp.run();
        require(container.nonNilCount() == 1);    
 
-       mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("appender()"));
+       mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
        mp.run();
        require(container.nonNilCount() == 2);    
 
        Multiprocess mp2 = new Multiprocess(2);
-       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("appender()"));
-       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("appender()"));
+       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
+       mp2.addJob(4000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
        mp2.run();
        require(container.nonNilCount() == 4);  
     }
 
-    function appender()  public {
+    function testAppender()  public {
        container.push(true);
     }
 }
@@ -438,52 +438,52 @@ contract ParallelizerArrayTest {
     Bool container = new Bool();
     Multiprocess[2] parallelizers;
 
-    function call() public  { 
+    function testCall() public  { 
        parallelizers[0] = new Multiprocess(2);
-       parallelizers[0] .addJob(1000000, 0, address(this), abi.encodeWithSignature("appender()"));
-       parallelizers[0] .addJob(1000000, 0, address(this), abi.encodeWithSignature("appender()"));
+       parallelizers[0] .addJob(1000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
+       parallelizers[0] .addJob(1000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
        parallelizers[0] .run();
        require(container.nonNilCount() == 2);  
 
        parallelizers[1] = new Multiprocess(2);
-       parallelizers[1] .addJob(1000000, 0, address(this), abi.encodeWithSignature("appender()"));
-       parallelizers[1] .addJob(1000000, 0, address(this), abi.encodeWithSignature("appender()"));
+       parallelizers[1] .addJob(1000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
+       parallelizers[1] .addJob(1000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
        parallelizers[1] .run();
        require(container.nonNilCount() == 4);  
     }
 
-    function appender()  public {
+    function testAppender()  public {
        container.push(true);
     }
 }
 
 contract MultiParaCumulativeU256 {
     U256Cumulative cumulative = new U256Cumulative(0, 100);     
-    function call() public {
+    function testCall() public {
         Multiprocess mp1 = new Multiprocess(1); // MultiParaCumulativeU256:nonce + 1
-        mp1.addJob(400000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2));
+        mp1.addJob(400000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2));
         mp1.run();
         require(cumulative.get() == 2);
 
         Multiprocess mp2 = new Multiprocess(1); // MultiParaCumulativeU256:nonce + 2
-        mp2.addJob(400000, 0, address(this), abi.encodeWithSignature("add(uint256)", 3));
+        mp2.addJob(400000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 3));
         mp2.run();
         require(cumulative.get() == 5);  
 
         Multiprocess mp3 = new Multiprocess(1); // MultiParaCumulativeU256:nonce + 3
-        mp3.addJob(400000, 0, address(this), abi.encodeWithSignature("sub(uint256)", 4));
+        mp3.addJob(400000, 0, address(this), abi.encodeWithSignature("testSub(uint256)", 4));
         mp3.run();  
         require(cumulative.get() == 1);  
 
-        add(3);
+        testAdd(3);
         require(cumulative.get() == 4);
     }
 
-    function add(uint256 elem) public { 
+    function testAdd(uint256 elem) public { 
         cumulative.add(elem);
     }  
 
-    function sub(uint256 elem) public { 
+    function testSub(uint256 elem) public { 
         cumulative.sub(elem);
     }   
 }
@@ -491,80 +491,80 @@ contract MultiParaCumulativeU256 {
 
 contract MultiParaCumulativeU256WithParent {
     U256Cumulative cumulative = new U256Cumulative(0, 100);     
-    function call() public {
+    function testCall() public {
         cumulative.add(1);
 
         Multiprocess mp1 = new Multiprocess(1); // MultiParaCumulativeU256:nonce + 1
-        mp1.addJob(400000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2));
+        mp1.addJob(400000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2));
         mp1.run();
         require(cumulative.get() == 3);
 
         Multiprocess mp2 = new Multiprocess(1); // MultiParaCumulativeU256:nonce + 2
-        mp2.addJob(400000, 0, address(this), abi.encodeWithSignature("add(uint256)", 3));
+        mp2.addJob(400000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 3));
         mp2.run();
         require(cumulative.get() == 6);  
 
         Multiprocess mp3 = new Multiprocess(1); // MultiParaCumulativeU256:nonce + 3
-        mp3.addJob(400000, 0, address(this), abi.encodeWithSignature("sub(uint256)", 2));
-        mp3.addJob(400000, 0, address(this), abi.encodeWithSignature("sub(uint256)", 2));
-        mp3.addJob(400000, 0, address(this), abi.encodeWithSignature("add(uint256)", 1));
+        mp3.addJob(400000, 0, address(this), abi.encodeWithSignature("testSub(uint256)", 2));
+        mp3.addJob(400000, 0, address(this), abi.encodeWithSignature("testSub(uint256)", 2));
+        mp3.addJob(400000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 1));
         mp3.run();  
         require(cumulative.get() == 3);  
 
-        add(3);
+        testAdd(3);
         require(cumulative.get() == 6);
     }
 
-    function add(uint256 elem) public { 
+    function testAdd(uint256 elem) public { 
         cumulative.add(elem);
     }  
 
-    function sub(uint256 elem) public { 
+    function testSub(uint256 elem) public { 
         cumulative.sub(elem);
     }   
 }
 
 contract MultiCumulativeU256ConcurrentOperation {
     U256Cumulative cumulative = new U256Cumulative(0, 100);     
-    function call() public {
+    function testCall() public {
         Multiprocess mp1 = new Multiprocess(1);
-        mp1.addJob(400000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2));
-        mp1.addJob(400000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2));
-        mp1.addJob(400000, 0, address(this), abi.encodeWithSignature("sub(uint256)", 2));
+        mp1.addJob(400000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2));
+        mp1.addJob(400000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2));
+        mp1.addJob(400000, 0, address(this), abi.encodeWithSignature("testSub(uint256)", 2));
         mp1.run();        
         require(cumulative.get() == 4);  
 
-        add(3);
+        testAdd(3);
         require(cumulative.get() == 7);
     }
 
-    function add(uint256 elem) public { 
+    function testAdd(uint256 elem) public { 
         cumulative.add(elem);
     }  
 
-    function sub(uint256 elem) public { 
+    function testSub(uint256 elem) public { 
         cumulative.sub(elem);
     }   
 }
 
 contract RecursiveParallelizerOnNativeArrayTest {
     uint256[2] results;
-    function call() public {
+    function testCall() public {
         Multiprocess mp = new Multiprocess(1);
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("add()")); // Only one will go through
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testAdd()")); // Only one will go through
         mp.run();
 
         require(results[0] == 11);
         require(results[1] == 12);
     } 
 
-    function add() public { 
+    function testAdd() public { 
         Multiprocess mp2 = new Multiprocess(1); 
-        mp2.addJob(11111111, 0, address(this), abi.encodeWithSignature("add2()"));
+        mp2.addJob(11111111, 0, address(this), abi.encodeWithSignature("testAdd2()"));
         mp2.run();              
     }  
 
-    function add2() public { 
+    function testAdd2() public { 
         results[0] = 11;
         results[1] = 12;
     }  
@@ -573,10 +573,10 @@ contract RecursiveParallelizerOnNativeArrayTest {
 contract RecursiveAssignerTest {
     uint256[4] array; 
 
-    function call() public { 
+    function testCall() public { 
        Multiprocess mp = new Multiprocess(2); 
-       mp.addJob(5000000, 0, address(this), abi.encodeWithSignature("proxy(uint256)", 0));
-       mp.addJob(5000000, 0, address(this), abi.encodeWithSignature("proxy(uint256)", 1));
+       mp.addJob(5000000, 0, address(this), abi.encodeWithSignature("testProxy(uint256)", 0));
+       mp.addJob(5000000, 0, address(this), abi.encodeWithSignature("testProxy(uint256)", 1));
        mp.run();
 
        require(array[0] == 10);
@@ -585,14 +585,14 @@ contract RecursiveAssignerTest {
        require(array[3] == 23); 
     }
 
-    function proxy(uint256 idx) public {
+    function testProxy(uint256 idx) public {
        Multiprocess mp = new Multiprocess(2); 
-       mp.addJob(2500000, 0, address(this), abi.encodeWithSignature("assign(uint256,uint256,uint256)", idx, 0, 10));
-       mp.addJob(2500000, 0, address(this), abi.encodeWithSignature("assign(uint256,uint256,uint256)", idx, 1, 20));
+       mp.addJob(2500000, 0, address(this), abi.encodeWithSignature("testAssign(uint256,uint256,uint256)", idx, 0, 10));
+       mp.addJob(2500000, 0, address(this), abi.encodeWithSignature("testAssign(uint256,uint256,uint256)", idx, 1, 20));
        mp.run();        
     }
 
-    function assign(uint256 idx, uint256 i, uint256 v) public {
+    function testAssign(uint256 idx, uint256 i, uint256 v) public {
         array[idx*2 + i] = v + idx*2 + i;
     }   
 } 
@@ -602,9 +602,9 @@ contract RecursiveParallelizerOnContainerTest {
     Bool container = new Bool();
     U256Cumulative cumulative = new U256Cumulative(0, 100);  
 
-    function call() public {
+    function testCall() public {
         Multiprocess mp = new Multiprocess(1);
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("add()")); // Only one will go through
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testAdd()")); // Only one will go through
         mp.run();
 
         // require(results[0] == 11);
@@ -613,15 +613,15 @@ contract RecursiveParallelizerOnContainerTest {
         require(cumulative.get() == 5);
     } 
 
-    function add() public { 
+    function testAdd() public { 
         container.push(true);
         cumulative.add(10);
         Multiprocess mp2 = new Multiprocess(1); 
-        mp2.addJob(11111111, 0, address(this), abi.encodeWithSignature("add2()"));
+        mp2.addJob(11111111, 0, address(this), abi.encodeWithSignature("testAdd2()"));
         mp2.run();              
     }  
 
-    function add2() public {
+    function testAdd2() public {
         container.push(true); 
         cumulative.sub(5);
         results[0] = 11;
@@ -632,35 +632,35 @@ contract RecursiveParallelizerOnContainerTest {
 contract MaxRecursiveDepth4Test {
     Bool container = new Bool();
 
-    function call() public {
+    function testCall() public {
         // container.push(true);       
         Multiprocess mp = new Multiprocess(1);
-        mp.addJob(99999999, 0, address(this), abi.encodeWithSignature("add()")); // Only one will go through
-        mp.addJob(99999999, 0, address(this), abi.encodeWithSignature("add()")); // Only one will go through
+        mp.addJob(99999999, 0, address(this), abi.encodeWithSignature("testAdd()")); // Only one will go through
+        mp.addJob(99999999, 0, address(this), abi.encodeWithSignature("testAdd()")); // Only one will go through
         mp.run();
 
         require(container.nonNilCount() == 14); 
         require(container.nonNilCount() == 14);       
     } 
 
-    function add() public { 
+    function testAdd() public { 
         Multiprocess mp2 = new Multiprocess(1); 
-        mp2.addJob(41111111, 0, address(this), abi.encodeWithSignature("add2()"));
-        mp2.addJob(41111111, 0, address(this), abi.encodeWithSignature("add2()"));
+        mp2.addJob(41111111, 0, address(this), abi.encodeWithSignature("testAdd2()"));
+        mp2.addJob(41111111, 0, address(this), abi.encodeWithSignature("testAdd2()"));
 
         mp2.run();
         container.push(true);              
     } 
 
-    function add2() public { 
+    function testAdd2() public { 
         Multiprocess mp2 = new Multiprocess(1); 
-        mp2.addJob(21111111, 0, address(this), abi.encodeWithSignature("add3()"));
-        mp2.addJob(21111111, 0, address(this), abi.encodeWithSignature("add3()"));
+        mp2.addJob(21111111, 0, address(this), abi.encodeWithSignature("testAdd3()"));
+        mp2.addJob(21111111, 0, address(this), abi.encodeWithSignature("testAdd3()"));
         mp2.run();
         container.push(true);              
     } 
 
-    function add3() public { 
+    function testAdd3() public { 
         container.push(true);              
     } 
 }
@@ -669,19 +669,19 @@ contract MaxSelfRecursiveDepth4Test {
     Bool container = new Bool();
 
     Multiprocess mp;
-    function call() public {
+    function testCall() public {
         // container.push(true);       
         mp = new Multiprocess(1);
-        mp.addJob(99999999, 0, address(this), abi.encodeWithSignature("add()")); // Only one will go through
-        mp.addJob(99999999, 0, address(this), abi.encodeWithSignature("add()")); // Only one will go through
+        mp.addJob(99999999, 0, address(this), abi.encodeWithSignature("testAdd()")); // Only one will go through
+        mp.addJob(99999999, 0, address(this), abi.encodeWithSignature("testAdd()")); // Only one will go through
         mp.run();
         require(container.nonNilCount() == 30); // 2 + 4 + 8 + 16
     } 
 
-    function add() public { 
+    function testAdd() public { 
         Multiprocess mp2 = new Multiprocess(1); 
-        mp2.addJob(21111111, 0, address(this), abi.encodeWithSignature("add()"));
-        mp2.addJob(21111111, 0, address(this), abi.encodeWithSignature("add()"));
+        mp2.addJob(21111111, 0, address(this), abi.encodeWithSignature("testAdd()"));
+        mp2.addJob(21111111, 0, address(this), abi.encodeWithSignature("testAdd()"));
         mp2.run();
         container.push(true);              
     }     
@@ -692,25 +692,25 @@ contract MaxRecursiveDepthOffLimitTest {
     U256Cumulative cumulative = new U256Cumulative(0, 200);  
 
     Multiprocess mp;
-    function call() public {
+    function testCall() public {
         cumulative.add(2);
         // require(cumulative.get() == 10);
 
         container.push(true);       
         mp = new Multiprocess(1);
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("add()"));
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("add()")); 
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testAdd()"));
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testAdd()")); 
         mp.run();
   
         require(container.nonNilCount() == 31); // 1 + (2 + 4 + 8 + 16) 
         require(cumulative.get() == 62);
     } 
 
-    function add() public { 
+    function testAdd() public { 
         cumulative.add(2);
         Multiprocess mp2 = new Multiprocess(1); 
-        mp2.addJob(41111111, 0, address(this), abi.encodeWithSignature("add()"));
-        mp2.addJob(41111111, 0, address(this), abi.encodeWithSignature("add()"));
+        mp2.addJob(41111111, 0, address(this), abi.encodeWithSignature("testAdd()"));
+        mp2.addJob(41111111, 0, address(this), abi.encodeWithSignature("testAdd()"));
         mp2.run();
         container.push(true);              
     }    
@@ -719,26 +719,26 @@ contract MaxRecursiveDepthOffLimitTest {
 contract ParaFixedLengthWithConflictRollbackTest {
     Bool container = new Bool();
     uint256[2] results;
-    function call() public {
+    function testCall() public {
         Multiprocess mp = new Multiprocess(2);
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("worker()")); // Only one will go through
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("worker()")); // Only one will go through
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testWorker()")); // Only one will go through
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testWorker()")); // Only one will go through
         mp.run();
         require(container.nonNilCount() == 1);
 
-        appender();
+        testAppender();
         require(container.nonNilCount() == 2);
     } 
 
-    function worker() public { 
+    function testWorker() public { 
         Multiprocess mp2 = new Multiprocess(2); 
-        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("appender()"));
+        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("testAppender()"));
         mp2.run();   
         results[0] = 1;
         results[1] = 1;
     }   
 
-    function appender() public { 
+    function testAppender() public { 
         container.push(true);
     }  
 }
@@ -747,48 +747,48 @@ contract ParaSubbranchConflictTest {
     Bool container = new Bool();
     uint256[2] results0;
     uint256[2] results1;
-    function call() public {
+    function testCall() public {
         Multiprocess mp = new Multiprocess(2);
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("worker0()")); // Only one will go through
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("worker1()")); // Only one will go through
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testWorker0()")); // Only one will go through
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testWorker1()")); // Only one will go through
         mp.run();
         require(container.nonNilCount() == 4);
     } 
 
-    function worker0() public { 
+    function testWorker0() public { 
         Multiprocess mp2 = new Multiprocess(2); 
-        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("appender00()"));
-        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("appender01()"));
+        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("testAppender00()"));
+        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("testAppender01()"));
         mp2.run();   
         
         container.push(true);
     }   
 
-    function appender00() public { 
+    function testAppender00() public { 
         container.push(true);
         results0[0] = 1;
     }  
 
-    function appender01() public { 
+    function testAppender01() public { 
         container.push(true);
         results0[0] = 1;
     }  
 
-    function worker1() public { 
+    function testWorker1() public { 
         Multiprocess mp2 = new Multiprocess(2); 
-        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("appender10()"));
-        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("appender11()"));
+        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("testAppender10()"));
+        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("testAppender11()"));
         mp2.run();   
         
         container.push(true);
     }   
 
-    function appender10() public { 
+    function testAppender10() public { 
         container.push(true);
         results1[0] = 1;
     }  
 
-    function appender11() public { 
+    function testAppender11() public { 
         container.push(true);
         uint256 a = results1[0];
     }  
@@ -796,15 +796,15 @@ contract ParaSubbranchConflictTest {
 
 contract SimpleConflictTest {
     uint256 data;
-    function call() public {
+    function testCall() public {
         Multiprocess mp = new Multiprocess(2);
-        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("assign(uint256)", 1)); // Only one will go through
-        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("assign(uint256)", 2)); // Only one will go through
+        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("testAssign(uint256)", 1)); // Only one will go through
+        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("testAssign(uint256)", 2)); // Only one will go through
         mp.run();
         require(data == 1);
     }
 
-    function assign(uint256 v) public { 
+    function testAssign(uint256 v) public { 
         data = v;
     } 
 }
@@ -813,16 +813,16 @@ contract ParentChildBranchConflictTest {
     Bool container = new Bool();
     uint256[2] results0;
     uint256[2] results1;
-    function call() public {
+    function testCall() public {
         Multiprocess mp = new Multiprocess(2);
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("worker0()")); // Only one will go through
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("worker1()")); // Only one will go through
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testWorker0()")); // Only one will go through
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testWorker1()")); // Only one will go through
         mp.run();
         require(container.nonNilCount() == 1);
         require(results0[0] == 2);
     } 
 
-    function worker0() public { 
+    function testWorker0() public { 
         results0[0] = 2;
         Multiprocess mp2 = new Multiprocess(2); 
         mp2.run();   
@@ -830,15 +830,15 @@ contract ParentChildBranchConflictTest {
         container.push(true);
     }   
 
-    function worker1() public { 
+    function testWorker1() public { 
         Multiprocess mp2 = new Multiprocess(2); 
-        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("appender10()"));
+        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("testAppender10()"));
         mp2.run();   
         
         container.push(true);
     }   
 
-    function appender10() public { 
+    function testAppender10() public { 
         container.push(true);
         results0[0] = 1;
     }  
@@ -851,12 +851,12 @@ contract MixedRecursiveMultiprocessTest {
     U256Cumulative cumulative2 = new U256Cumulative(50, 80);  
 
     Multiprocess mp;
-    function call() public {
+    function testCall() public {
 		mp = new Multiprocess(1);
         cumulative.add(50);
         container.push(true);
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("add()")); // Only one will go through
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("add()")); // Only one will go through
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testAdd()")); // Only one will go through
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testAdd()")); // Only one will go through
         mp.run();
         require(container.nonNilCount() == 3);
 
@@ -867,15 +867,15 @@ contract MixedRecursiveMultiprocessTest {
         require(cumulative2.get() == 70); 
     } 
 
-    function add() public { 
+    function testAdd() public { 
         cumulative.add(10);
         Multiprocess mp2 = new Multiprocess(1); 
-        mp2.addJob(11111111, 0, address(this), abi.encodeWithSignature("add2()"));
+        mp2.addJob(11111111, 0, address(this), abi.encodeWithSignature("testAdd2()"));
         mp2.run();
         container.push(true);              
     }  
 
-    function add2() public {
+    function testAdd2() public {
         cumulative.sub(5);
         cumulative2.add(70);
         results[0] = 11;
@@ -886,95 +886,95 @@ contract MixedRecursiveMultiprocessTest {
 
 contract ParallelCumulativeU256 {
 	U256Cumulative cumulative = new U256Cumulative(0, 100); 
-	constructor() {
+	function setUp() public {
 		// require(cumulative.committedLength() == 0);
 		cumulative.add(1);
 		cumulative.sub(1);
 		// require(cumulative.committedLength() == 0);
 	}
 
-	function call() public {
+	function testCall() public {
 		Multiprocess mp = new Multiprocess(1);
-		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2));
-		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2));   
-		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 1));
+		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2));
+		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2));   
+		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 1));
 		mp.run();
 		require(cumulative.get() == 5);
 
 		
-		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 1));
-		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2));
-		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("sub(uint256)", 2));
+		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 1));
+		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2));
+		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testSub(uint256)", 2));
 		mp.run();
 		require(cumulative.get() == 6);
 
 		
-		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("sub(uint256)", 1));
+		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testSub(uint256)", 1));
 		mp.run();
 		require(cumulative.get() == 5);
 
 		
-		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2));
+		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2));
 		mp.run();
 		require(cumulative.get() == 7);      
 		// require(cumulative.committedLength() == 0);
 
 		
-        mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 1)); // 7 + 50 + 1  < 100 => 58  
-		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 50)); // 7 + 50 < 100 => 57
-		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 50)); // 7 + 50 + 50  > 100 still 57 
+        mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 1)); // 7 + 50 + 1  < 100 => 58  
+		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 50)); // 7 + 50 < 100 => 57
+		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 50)); // 7 + 50 + 50  > 100 still 57 
 		mp.run();  
 
 		require(cumulative.get() == 58);
 	}
 	
-	function call1() public {
+	function testCall1() public {
 		Multiprocess mp = new Multiprocess(1);
-		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2));
+		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2));
 		mp.run();
 		require(cumulative.get() == 2);   
 
 		
-		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("sub(uint256)", 1));
+		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testSub(uint256)", 1));
 		mp.run();
 		require(cumulative.get() == 1);   
 	}
 
-	function call2() public {
+	function testCall2() public {
 		require(cumulative.get() == 1);
 	}
 
-	function add(uint256 elem) public { 
+	function testAdd(uint256 elem) public { 
 		cumulative.add(elem);
 	}  
 
-	function sub(uint256 elem) public { 
+	function testSub(uint256 elem) public { 
 		cumulative.sub(elem);
 	}  
 }
 
 contract ThreadingCumulativeU256SameMpMulti {
 	U256Cumulative cumulative = new U256Cumulative(0, 100);     
-	function call() public {
+	function testCall() public {
 		Multiprocess mp1 = new Multiprocess(2);
-		mp1.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2));
+		mp1.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2));
 		mp1.run();
 	
-		mp1.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2));
+		mp1.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2));
 		mp1.run(); 
 
-		mp1.addJob(200000, 0, address(this), abi.encodeWithSignature("sub(uint256)", 2));
+		mp1.addJob(200000, 0, address(this), abi.encodeWithSignature("testSub(uint256)", 2));
 		mp1.run();   
 
-		add(2);
+		testAdd(2);
 		require(cumulative.get() == 4);
 	}
 
-	function add(uint256 elem) public { 
+	function testAdd(uint256 elem) public { 
 		cumulative.add(elem);
 	}  
 
-	function sub(uint256 elem) public { 
+	function testSub(uint256 elem) public { 
 		cumulative.sub(elem);
 	}  
 }
@@ -984,15 +984,15 @@ contract ThreadingCumulativeU256SameMpMulti {
 contract U256ParaCompute {
     uint256 num = 0;
 
-    function call() public {     
+    function testCall() public {     
         Multiprocess mp = new Multiprocess(2);                                                  // Create Multiprocess instance with 2 threads         
-        mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2)); // First function call    
-        mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2)); // Second function call    
+        mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2)); // First function call    
+        mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2)); // Second function call    
         mp.run(); 					                                                            // Call the function in parallel
         require(num == 2);                                                                      // Ensure that the 'num' variable is 2
     }
 
-    function add(uint256 elem) public {                                                         // Perform addition to the 'num' variable
+    function testAdd(uint256 elem) public {                                                         // Perform addition to the 'num' variable
         num += elem;
     }  
 }
@@ -1002,15 +1002,15 @@ contract U256ParaCompute {
 contract CumulativeU256ParaCompute {
     U256Cumulative cumulative = new U256Cumulative(0, 100); 
 
-    function calculate() public {       
+    function testCalculate() public {       
         Multiprocess mp = new Multiprocess(2);   // Create Multiprocess instance with 2 threads
-		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2)); // Add the first function call      
-        mp.addJob(200000, 0, address(this), abi.encodeWithSignature("add(uint256)", 2)); // Add the second function call  
+		mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2)); // Add the first function call      
+        mp.addJob(200000, 0, address(this), abi.encodeWithSignature("testAdd(uint256)", 2)); // Add the second function call  
         mp.run();   																// Call the functions in parallel
         require(cumulative.get() == 4);         								  // Ensure that the cumulative value is 4
 	}
 
-    function add(uint256 elem) public { 
+    function testAdd(uint256 elem) public { 
         cumulative.add(elem);                                                      // Perform addition to the variable
     }  
 }
@@ -1019,21 +1019,21 @@ contract NativeStorage {
     uint256 public x = 1 ;
     uint256 public y = 100 ;
 
-    function incrementX() public {x ++;}
-    function incrementY() public {y += 2;}
+    function testIncrementX() public {x ++;}
+    function testIncrementY() public {y += 2;}
 
-    function getX() public  returns(uint256) {return x;}
-    function getY() public  returns(uint256) {return y;}
+    function testGetX() public  returns(uint256) {return x;}
+    function testGetY() public  returns(uint256) {return y;}
 }
 
 contract NativeStorageAssignmentTest {
     NativeStorage results = new NativeStorage() ;
-    function call() public  { 
+    function testCall() public  { 
         Multiprocess mp = new Multiprocess(2); 
-        mp.addJob(50000, 0, address(results), abi.encodeWithSignature("incrementX()"));
-        mp.addJob(50000, 0, address(results), abi.encodeWithSignature("incrementY()"));
-        mp.addJob(50000, 0, address(results), abi.encodeWithSignature("incrementX()"));
-        // mp.addJob(50000, 0, address(results), abi.encodeWithSignature("incrementY()"));
+        mp.addJob(50000, 0, address(results), abi.encodeWithSignature("testIncrementX()"));
+        mp.addJob(50000, 0, address(results), abi.encodeWithSignature("testIncrementY()"));
+        mp.addJob(50000, 0, address(results), abi.encodeWithSignature("testIncrementX()"));
+        // mp.addJob(50000, 0, address(results), abi.encodeWithSignature("testIncrementY()"));
         mp.run();
         require(results.getX() == 2);
         require(results.getY() == 102);
@@ -1042,64 +1042,64 @@ contract NativeStorageAssignmentTest {
 
 contract sharedContract{ 
     uint256 counter = 0;
-    function increment () public {
+    function testIncrement () public {
         counter ++;
     }
 
-    function get() public  returns(uint256){
+    function testGet() public  returns(uint256){
         return counter;
     }
 }
 
 contract conflictLeft{ 
     uint256 internalCounter = 0;
-    function increment () public {
+    function testIncrement () public {
         internalCounter ++;
     }
 
-    function callShared (address callee) public {
+    function testCallShared (address callee) public {
         internalCounter ++;
-        sharedContract(callee).increment();
+        sharedContract(callee).testIncrement();
     }
     
-    function get() public  returns(uint256){
+    function testGet() public  returns(uint256){
         return internalCounter;
     }
 }
 
 contract conflictRight{ 
     uint256 internalCounter = 0;
-    function increment () public {
+    function testIncrement () public {
         internalCounter ++;
     }
     
-    function callShared (address callee) public {
+    function testCallShared (address callee) public {
         internalCounter += 2;
-        sharedContract(callee).increment();
+        sharedContract(callee).testIncrement();
     }
 
-    function get() public  returns(uint256){
+    function testGet() public  returns(uint256){
         return internalCounter;
     }
 }
 
 contract ParaConflictTest {
     NativeStorage results = new NativeStorage() ;
-    function call() public  { 
+    function testCall() public  { 
         conflictLeft left = new conflictLeft();
         conflictRight right = new conflictRight();
 
         Multiprocess mp = new Multiprocess(2); 
-        mp.addJob(50000, 0, address(left), abi.encodeWithSignature("increment()"));
-        mp.addJob(50000, 0, address(right), abi.encodeWithSignature("increment()"));
+        mp.addJob(50000, 0, address(left), abi.encodeWithSignature("testIncrement()"));
+        mp.addJob(50000, 0, address(right), abi.encodeWithSignature("testIncrement()"));
         mp.run();
 
         require(left.get() == 1);
         require(right.get() == 1);
 
         // sharedContract shared =  new sharedContract();    
-        // mp.addJob(50000, 0, address(left), abi.encodeWithSignature("callShared(address)", 0, address(shared)));
-        // mp.addJob(50000, 0, address(right), abi.encodeWithSignature("callShared(address)", 0, address(shared)));
+        // mp.addJob(50000, 0, address(left), abi.encodeWithSignature("testCallShared(address)", 0, address(shared)));
+        // mp.addJob(50000, 0, address(right), abi.encodeWithSignature("testCallShared(address)", 0, address(shared)));
         // mp.run();
 
         // require(shared.get() == 1);
@@ -1109,10 +1109,10 @@ contract ParaConflictTest {
 contract ParaRwConflictTest {
     uint256 counter = 0;
     uint256 counterCopy = 0;
-    function call() public  { 
+    function testCall() public  { 
         Multiprocess mp = new Multiprocess(2); 
-        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("read()"));
-        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("write(uint256)", 11));
+        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("testRead()"));
+        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("testWrite(uint256)", 11));
         mp.run();
 
   
@@ -1121,11 +1121,11 @@ contract ParaRwConflictTest {
         require(counter == 11);
     }
 
-    function read() public {
+    function testRead() public {
         counterCopy = counter; // Counter read
     }
 
-    function write(uint256 v) public  {
+    function testWrite(uint256 v) public  {
         counter = v; // Counter write 
     }   
 } 
@@ -1133,10 +1133,10 @@ contract ParaRwConflictTest {
 contract ParaPayableConflictTest {
     uint256 counter = 0;
     uint256 counterCopy = 0;
-    function call() public  { 
+    function testCall() public  { 
         Multiprocess mp = new Multiprocess(2); 
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("read()"));
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("write()", 11));
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testRead()"));
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testWrite()", 11));
         mp.run();
 
 
@@ -1144,11 +1144,11 @@ contract ParaPayableConflictTest {
         require(counter == 0);
     }
 
-    function read() public {
+    function testRead() public {
         counterCopy = counter;
     }
 
-    function write(uint256 v) public  {
+    function testWrite(uint256 v) public  {
         counter = v;
     }   
 } 
@@ -1156,26 +1156,26 @@ contract ParaPayableConflictTest {
 contract ParaCumU256SubTest{
     U256Cumulative counter = new U256Cumulative(0, 100);
 
-    constructor()  {
+    function setUp() public {
         counter.add(100);
     }
 
-    function call() public  { 
+    function testCall() public  { 
         Multiprocess mp = new Multiprocess(2); 
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("sub(uint256)", 40));
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("sub(uint256)", 40));
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testSub(uint256)", 40));
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testSub(uint256)", 40));
         mp.run();
 
         require(counter.get() == 20);
 
         counter.add(80);
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("sub(uint256)", 60));
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("sub(uint256)", 60));
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testSub(uint256)", 60));
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testSub(uint256)", 60));
         mp.run();
         require(counter.get() == 40);
     }
 
-    function sub(uint256 v) public {
+    function testSub(uint256 v) public {
         counter.sub(v);
     }  
 } 
@@ -1183,31 +1183,31 @@ contract ParaCumU256SubTest{
 contract ParaDeletions{
     StringUint256Map addBoolLookup = new StringUint256Map();
 
-    constructor()  {
+    function setUp() public {
         addBoolLookup.set("key 0", 100);
         addBoolLookup.set("key 1", 200);
         addBoolLookup.set("key 2", 300);
     }
 
-    function call() public  { 
+    function testCall() public  { 
         // require(addBoolLookup.valueAt(0) == 100);
         // require(addBoolLookup.valueAt(1) == 200);
         // require(addBoolLookup.valueAt(2) == 300);
 
-        del("key 0");
+        testDel("key 0");
         require(addBoolLookup.valueAt(0) == 0);
         require(addBoolLookup.valueAt(1) == 200);
         require(addBoolLookup.valueAt(2) == 300);
 
         Multiprocess mp = new Multiprocess(2); 
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("del(string)", "key 0"));
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("del(string)", "key 2"));
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testDel(string)", "key 0"));
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testDel(string)", "key 2"));
         mp.run();
 
         require(addBoolLookup.nonNilCount() == 1);
 
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("add(string,uint256)", "key 10", 21));
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("add(string,uint256)", "key 23", 31));
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testAdd(string,uint256)", "key 10", 21));
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testAdd(string,uint256)", "key 23", 31));
         mp.run();
 
         require(addBoolLookup.nonNilCount() == 3);
@@ -1215,24 +1215,24 @@ contract ParaDeletions{
         require(addBoolLookup.get("key 23") == 31);
 
         // set a new key value pair and delete another, this should not cause any conflicts.
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("del(string)", "key 10"));
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("add(string,uint256)", "key 23", 41));
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testDel(string)", "key 10"));
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testAdd(string,uint256)", "key 23", 41));
         mp.run();
       
         require(addBoolLookup.nonNilCount() == 2);
 
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("add(string,uint256)", "key 10", 21)); // Added it back
-        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("add(string,uint256)", "key 23", 41));
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testAdd(string,uint256)", "key 10", 21)); // Added it back
+        mp.addJob(50000, 0, address(this), abi.encodeWithSignature("testAdd(string,uint256)", "key 23", 41));
         mp.run();
         require(addBoolLookup.nonNilCount() == 3);      
         // require(addBoolLookup.valueAt(1) == 200);
     }
 
-    function add(string memory key, uint256 v) public {
+    function testAdd(string memory key, uint256 v) public {
         addBoolLookup.set(key,  v);
     } 
 
-    function del(string memory key) public {
+    function testDel(string memory key) public {
         addBoolLookup.del(key);
     }  
 } 
@@ -1248,7 +1248,7 @@ contract ParaAddressUint256ConflictTest {
 
     address[] public addrs;
 
-    constructor() {
+    function setUp() public {
         addrs.push(addr1);
         addrs.push(addr2);
         addrs.push(addr3);
@@ -1256,7 +1256,7 @@ contract ParaAddressUint256ConflictTest {
         addrs.push(addr5);
     }
 
-    function call() public  { 
+    function testCall() public  { 
         container.set(addr1, 18, 17, 111);
         container.set(addr2, 19, 18, 112);                
         container.set(addr3, 20, 19, 113);
@@ -1265,13 +1265,13 @@ contract ParaAddressUint256ConflictTest {
         require(container.get(addr2) == 19);
         require(container.get(addr3) == 20);
 
-        // pusher(2);
+        // testPusher(2);
 
         Multiprocess mp = new Multiprocess(4); 
-        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("adder(uint256)", 1)); // Addr 2: 19
-        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("adder(uint256)", 2));// Addr 3 : 20
-        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("pusher(uint256)", 3));// Addr 4
-        // mp.addJob(500000, 0, address(this), abi.encodeWithSignature("pusher(uint256)", 4));// Addr 5
+        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("testAdder(uint256)", 1)); // Addr 2: 19
+        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("testAdder(uint256)", 2));// Addr 3 : 20
+        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("testPusher(uint256)", 3));// Addr 4
+        // mp.addJob(500000, 0, address(this), abi.encodeWithSignature("testPusher(uint256)", 4));// Addr 5
         mp.run();
 
         // require(container.get(addr1) == 18); // Sequentially added
@@ -1292,11 +1292,11 @@ contract ParaAddressUint256ConflictTest {
         // require(container.nonNilCount() == 5);
     }
 
-    function adder(uint256 num) public {
+    function testAdder(uint256 num) public {
         container.set(addrs[num], 1); // Set delta to 1
     }
 
-    function pusher(uint256 num) public {
+    function testPusher(uint256 num) public {
         container.set(addrs[num], int256(30 + num), 17, 111);
     }
 }

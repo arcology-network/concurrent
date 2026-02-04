@@ -7,7 +7,7 @@ import "../../../../contracts/crdt/array/Bool.sol";
 contract PairTest {
     Bytes bytesContainer = new Bytes();
     Bool boolContainer = new Bool();
-    constructor() {     
+    function testInitialState() public {     
         require(bytesContainer.nonNilCount() == 0); 
  
         bytes memory arr1 = '0x1000000000000000000000000000000000000000000000000000000000000001';
@@ -24,9 +24,9 @@ contract PairTest {
 
         require(keccak256(bytesContainer.get(0)) == keccak256(arr1));
         require(keccak256(bytesContainer.get(1)) == keccak256(arr2));
-        require(keccak256(bytesContainer.delLast()) == keccak256(arr2));
+        require(keccak256(bytesContainer.pop()) == keccak256(arr2));
 
-        bytesContainer.delLast();
+        bytesContainer.pop();
         require(bytesContainer.nonNilCount() == 0); 
 
         require(boolContainer.nonNilCount() == 0); 
@@ -52,10 +52,10 @@ contract PairTest {
         require(boolContainer.get(2));
         require(!boolContainer.get(3));
 
-        require(!boolContainer.delLast());
-        require(boolContainer.delLast());
-        require(boolContainer.delLast());
-        require(!boolContainer.delLast());
+        require(!boolContainer.pop());
+        require(boolContainer.pop());
+        require(boolContainer.pop());
+        require(!boolContainer.pop());
         require(boolContainer.nonNilCount() == 0);         
     }
 }

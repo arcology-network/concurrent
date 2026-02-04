@@ -3,15 +3,15 @@ pragma solidity >=0.7.0;
 
 contract SequentialTest {   
    uint256 x = 1 ;
-   function add() public {
+   function testAdd() public {
      x += 1;
    }
 
-   function check() public view {
+   function testCheck() public view {
      require(x == 2);
    }
 
-  //  function check2() public {
+  //  function testCheck2() public {
   //   require();
   // }
 }

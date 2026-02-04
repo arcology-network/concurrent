@@ -24,8 +24,8 @@ contract String is Base {
      * @notice Remove and return the last string data element from the concurrent array.
      * @return The last string data element from the array.
      */
-    function delLast() public virtual returns(string memory) {
-        return string(Base._delLast());
+    function pop() public virtual returns(string memory) {
+        return string(Base._pop());
     }
 
     /**

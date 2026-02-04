@@ -24,8 +24,8 @@ contract Bytes32 is Base {
      * @notice Remove and return the last bytes32 data element from the concurrent array.
      * @return The last bytes32 data element from the array.
      */
-    function delLast() public virtual returns(bytes32) {
-        return abi.decode(Base._delLast(), (bytes32));
+    function pop() public virtual returns(bytes32) {
+        return abi.decode(Base._pop(), (bytes32));
     }
 
     /**

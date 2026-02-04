@@ -6,7 +6,7 @@ import "../../../../contracts/crdt/array/Bool.sol";
 contract BoolTest {
     Bool boolContainer = new Bool();
     
-    constructor() {     
+    function setUp() public {     
         require(boolContainer.nonNilCount() == 0); 
     
         boolContainer.push(true);
@@ -30,10 +30,10 @@ contract BoolTest {
         require(boolContainer.get(2));
         require(!boolContainer.get(3));
 
-        require(!boolContainer.delLast());
-        require(boolContainer.delLast());
-        require(boolContainer.delLast());
-        require(!boolContainer.delLast());
+        require(!boolContainer.pop());
+        require(boolContainer.pop());
+        require(boolContainer.pop());
+        require(!boolContainer.pop());
         require(boolContainer.nonNilCount() == 0);  
         boolContainer.push(true);
         boolContainer.push(true);
@@ -46,18 +46,5 @@ contract BoolTest {
         require(!boolContainer.exists(3));
         require(boolContainer.exists(4));
         require(boolContainer.exists(5));       
-    }
-
-    function check() public{
-        require(boolContainer.nonNilCount() == 2);  
-        boolContainer.clearCommitted();
-        require(boolContainer.nonNilCount() == 0);  
-    }
-
-    function call() public{
-        boolContainer.push(true);
-        require(boolContainer.nonNilCount() == 2);  
-        boolContainer.push(true);
-        require(boolContainer.nonNilCount() == 2);  
     }
 }

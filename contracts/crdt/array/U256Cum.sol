@@ -32,8 +32,8 @@ contract U256Cum is Base {
      * @notice Remove and return the last uint256 data element from the concurrent array.
      * @return The last uint256 data element from the array.
      */
-    function delLast() public virtual returns(uint256) { 
-        return abi.decode(Base._delLast(), (uint256));  
+    function pop() public virtual returns(uint256) { 
+        return abi.decode(Base._pop(), (uint256));  
     }
 
     /**

@@ -6,7 +6,7 @@ import "../../../../contracts/crdt/array/Bytes32.sol";
 contract Bytes32Test {
     Bytes32 container = new Bytes32();
     
-    constructor() {     
+    function testInitialState() public {     
         require(container.nonNilCount() == 0); 
    
         bytes32 hash0 = keccak256(abi.encodePacked("0"));
@@ -35,9 +35,9 @@ contract Bytes32Test {
         require(container.get(2) == hash1);
         require(container.get(3) == hash0);
 
-        require(container.delLast() == hash0);
-        require(container.delLast() == hash1);
-        require(container.delLast() == hash2);
+        require(container.pop() == hash0);
+        require(container.pop() == hash1);
+        require(container.pop() == hash2);
 
         container.clear();
         require(container.nonNilCount() == 0);       

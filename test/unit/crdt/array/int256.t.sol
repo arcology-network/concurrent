@@ -6,7 +6,7 @@ import "../../../../contracts/crdt/array/Int256.sol";
 contract Int256Test {
     Int256 container = new Int256();
     
-    constructor() {     
+    function testInitialState() public {     
        require(container.nonNilCount() == 0); 
     
         container.push((10));
@@ -30,10 +30,10 @@ contract Int256Test {
         require(container.get(2) == (13));
         require(container.get(3) == (14));
 
-        require(container.delLast() == (14));
-        require(container.delLast() == (13));
-        require(container.delLast() == (12));
-        require(container.delLast() == (-11));
+        require(container.pop() == (14));
+        require(container.pop() == (13));
+        require(container.pop() == (12));
+        require(container.pop() == (-11));
         require(container.nonNilCount() == 0); 
     }
 }

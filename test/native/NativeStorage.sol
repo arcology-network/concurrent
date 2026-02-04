@@ -8,9 +8,9 @@ contract NativeStorage {
      //    uint256[32] public mediumArr;
      //    uint256[33] public longArr;
 
-   constructor() { 
-        incrementX();
-        incrementY();
+   function setUp() public { 
+        testIncrementX();
+        testIncrementY();
         require(x == 2);
         require(y == 102);   
 
@@ -18,9 +18,9 @@ contract NativeStorage {
      //    mediumArr[31] = 1;
      //    longArr[32] = 1;
    }
-   function call() public{
-        incrementX();
-        incrementY();
+   function testCall() public{
+        testIncrementX();
+        testIncrementY();
         require(x == 3);
         require(y == 104);
 
@@ -29,23 +29,23 @@ contract NativeStorage {
      //    require(longArr[32] == 1);        
    }
 
-    function incrementX() public {
+    function testIncrementX() public {
         x ++;
     }
 
-    function incrementY() public {
+    function testIncrementY() public {
        y += 2;
     }
 
-    function checkX(uint256 value) view public {
+    function testCheckX(uint256 value) view public {
         require(x == value);
     }
 
-    function checkY(uint256 value) view public {
+    function testCheckY(uint256 value) view public {
          require(y == value);
     }
 
-    function check() public {
+    function testCheck() public {
      require(x == 3);
      require(y == 104);
 
@@ -54,18 +54,18 @@ contract NativeStorage {
      // require(longArr[32] == 1);   
    }
 
-   function call2() public{
-     incrementX();
-     incrementY();
+   function testCall2() public{
+     testIncrementX();
+     testIncrementY();
    }
 
-   function check2() public {
+   function testCheck2() public {
      require(x == 3);
      require(y == 104);
      // require(y == 104);
    }
 
-   function check3() public {
+   function testCheck3() public {
      require(x == 4);
      require(y == 106);
      // require(y == 104);
@@ -76,9 +76,9 @@ contract TestFailed {
      uint256 x = 1;
      uint256 y = 100;
 
-     constructor() {}
+     function setUp() public {}
 
-     function call() public {
+     function testCall() public {
           require(x == 1);
      }
 }

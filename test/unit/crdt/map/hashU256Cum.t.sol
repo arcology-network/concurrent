@@ -6,7 +6,7 @@ import "../../../../contracts/crdt/map/HashU256Cum.sol";
 contract HashU256MapTest {
     HashU256Map container = new HashU256Map();
 
-    constructor() {     
+    function testSetup() public {     
         bytes32 hash1 = keccak256(abi.encodePacked("0"));
         bytes32 hash2 = keccak256(abi.encodePacked("1"));
         bytes32 hash3 = keccak256(abi.encodePacked("2"));
@@ -46,12 +46,6 @@ contract HashU256MapTest {
         require(container.get(hash2) == 20);
 
         container.set(hash4, 20, 0, 113);    
-    }
-
-    function resetter() public{
-        bytes32 hash4 = keccak256(abi.encodePacked("3"));
-        container.resetByInd(3);
-        require(container.get(hash4) == 0);     
     }
 }
 

@@ -6,7 +6,7 @@ import "../../../../contracts/multiprocess/Multiprocess.sol";
 
 contract StringUint256MapTest {
     StringUint256Map map = new StringUint256Map();
-    constructor() {     
+    function testBasic() public {     
         string memory k1 = "0x33333378901234567890123456789012345678900x3333337890123456789012345678901234567890";
         string memory k2 = "0x123";
         string memory k3 = "0x3333337890123456789012345678901234567890";

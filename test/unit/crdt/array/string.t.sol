@@ -6,7 +6,7 @@ import "../../../../contracts/crdt/array/String.sol";
 contract StringTest {
     String container = new String();
     
-    constructor() {     
+    function testInitialState() public {     
         require(container.nonNilCount() == 0); 
    
         string memory str0 = "Test string 0";
@@ -35,10 +35,10 @@ contract StringTest {
         require(keccak256(bytes(container.get(1))) == keccak256(bytes(str2)));
         require(keccak256(bytes(container.get(0))) == keccak256(bytes(str3)));
 
-        require(keccak256(bytes(container.delLast())) == keccak256(bytes(str0)));
-        require(keccak256(bytes(container.delLast())) == keccak256(bytes(str1)));
-        require(keccak256(bytes(container.delLast())) == keccak256(bytes(str2)));
-        require(keccak256(bytes(container.delLast())) == keccak256(bytes(str3)));
+        require(keccak256(bytes(container.pop())) == keccak256(bytes(str0)));
+        require(keccak256(bytes(container.pop())) == keccak256(bytes(str1)));
+        require(keccak256(bytes(container.pop())) == keccak256(bytes(str2)));
+        require(keccak256(bytes(container.pop())) == keccak256(bytes(str3)));
 
         require(container.nonNilCount() == 0);       
     }

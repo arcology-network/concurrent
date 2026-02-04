@@ -6,7 +6,7 @@ import "../../../../contracts/crdt/orderedset/OrderedSet.sol";
 contract OrderedSetTest {
     BytesOrderedSet container = new BytesOrderedSet(false);    
 
-    constructor() {       
+    function testInitialState() public {       
         bytes memory arr1 = '0x10';
         bytes memory arr2 = '0x20';
         bytes memory arr3 = '0x30';

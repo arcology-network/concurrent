@@ -24,8 +24,8 @@ contract U256 is Base {
      * @notice Remove and return the last uint256 data element from the concurrent array. Length will remain the same.
      * @return The last uint256 data element from the array.
      */
-    function delLast() public returns(uint256) {       
-        return uint256(abi.decode(Base._delLast(), (bytes32)));  
+    function pop() public returns(uint256) {       
+        return uint256(abi.decode(Base._pop(), (bytes32)));  
     }
 
     /**

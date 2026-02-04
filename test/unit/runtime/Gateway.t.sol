@@ -9,7 +9,7 @@ import "../../../contracts/crdt/array/Bytes.sol";
 contract ConcurrentGatewayTest {
     Gateway container = new Gateway(Const.BYTES, Const.CONTAINER_ADDR, false);    
 
-    constructor() {       
+    function testInitialState() public {       
         bytes memory elem1 = '0x1111111';
         bytes memory elem2 = '0x2222222';
 
@@ -30,7 +30,7 @@ contract ConcurrentGatewayTest {
 contract ContainerClearTest {
     Bytes container = new Bytes();    
 
-    constructor() {    
+    function testInitialState() public {    
         bytes memory arr1 = '0x1000000000000000000000000000000000000000000000000000000000000001';
         container.push(arr1);      
         container.clear();

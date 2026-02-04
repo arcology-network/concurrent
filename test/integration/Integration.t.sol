@@ -28,12 +28,12 @@ contract Integration {
 
     constructor() {
         number = 11;
-        Runtime.defer("deferrablePush(uint256)", 100000);  
+        Runtime.defer("testDeferrablePush(uint256)", 100000);  
     }
 
     function testMultiprocess() external {
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("push(uint256)", 0)); // Will require about 1.5M gas
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("push(uint256)", 1));
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testPush(uint256)", 0)); // Will require about 1.5M gas
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testPush(uint256)", 1));
         mp.run();
 
         require(u256Array.fullLength() == 2);     
@@ -42,58 +42,58 @@ contract Integration {
     }
 
     function testMultiprocessClear() external {
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("clearMp()")); // Will require about 1.5M gas
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("clearMp()"));
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testClearMp()")); // Will require about 1.5M gas
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testClearMp()"));
         mp.run(); 
         
     }    
 
     function testMultiprocessRun() external {
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("runMp()")); // Will require about 1.5M gas
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("runMp()"));
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testRunMp()")); // Will require about 1.5M gas
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testRunMp()"));
         mp.run(); 
     }  
 
-    function addConst(uint256 x) external pure returns (uint256) {
+    function testAddConst(uint256 x) external pure returns (uint256) {
         return x + 42;
     }
 
-    function addNum(uint256 x) external returns (uint256) {
+    function testAddNum(uint256 x) external returns (uint256) {
         number = number + x;
         return number;
     }
 
-    function set(uint256 x) external {
+    function testSet(uint256 x) external {
         number = x;
     }
 
-    function getNum() external view returns (uint256) {
+    function testGetNum() external view returns (uint256) {
         return number;
     }
 
-    function push(uint256 v) external {
+    function testPush(uint256 v) external {
         u256Array.push(v);
     }
 
-    function clearMp() external {
+    function testClearMp() external {
         mp.clear();
     }
 
-    function runMp() external {
+    function testRunMp() external {
         mp.run();
     }
 
-    function deferrablePush(uint256 v) external {
+    function testDeferrablePush(uint256 v) external {
         if (!Runtime.isInDeferred()) {
             u256Array.push(v);
         }
     }
 
-    function get(uint256 index) external returns (uint256) {
+    function testGet(uint256 index) external returns (uint256) {
         return u256Array.get(index);
     }
 
-    function length() external returns (uint256) {
+    function testLength() external returns (uint256) {
         return u256Array.fullLength();
     }
 }

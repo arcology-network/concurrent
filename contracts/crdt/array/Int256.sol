@@ -24,8 +24,8 @@ contract Int256 is Base {
      * @notice Remove and return the last int256 data element from the concurrent array.
      * @return The last int256 data element from the array.
      */
-    function delLast() public virtual returns(int256) { 
-        return abi.decode(Base._delLast(), (int256));  
+    function pop() public virtual returns(int256) { 
+        return abi.decode(Base._pop(), (int256));  
     }
 
     /**
