@@ -7,6 +7,17 @@ import "../../../../contracts/crdt/array/Bool.sol";
 contract PairTest {
     Bytes bytesContainer = new Bytes();
     Bool boolContainer = new Bool();
+
+    function assertGetBytes(uint256 idx, bytes memory expected) internal {
+        (bytes memory value, bool ok) = bytesContainer.get(idx);
+        require(ok && keccak256(value) == keccak256(expected));
+    }
+
+    function assertGetBool(uint256 idx, bool expected) internal {
+        (bool value, bool ok) = boolContainer.get(idx);
+        require(ok && value == expected);
+    }
+
     function testInitialState() public {     
         require(bytesContainer.nonNilCount() == 0); 
  
@@ -18,12 +29,12 @@ contract PairTest {
 
         require(bytesContainer.nonNilCount() == 2); 
 
-        require(keccak256(bytesContainer.get(1)) == keccak256(arr1));
+        assertGetBytes(1, arr1);
 
         bytesContainer.set(1, arr2);       
 
-        require(keccak256(bytesContainer.get(0)) == keccak256(arr1));
-        require(keccak256(bytesContainer.get(1)) == keccak256(arr2));
+        assertGetBytes(0, arr1);
+        assertGetBytes(1, arr2);
         require(keccak256(bytesContainer.pop()) == keccak256(arr2));
 
         bytesContainer.pop();
@@ -37,20 +48,20 @@ contract PairTest {
         boolContainer.push(true);
         require(boolContainer.nonNilCount() == 4); 
 
-        require(boolContainer.get(0));
-        require(!boolContainer.get(1));
-        require(!boolContainer.get(2));
-        require(boolContainer.get(3));
+        assertGetBool(0, true);
+        assertGetBool(1, false);
+        assertGetBool(2, false);
+        assertGetBool(3, true);
 
         boolContainer.set(0, false);
         boolContainer.set(1, true);
         boolContainer.set(2, true);
         boolContainer.set(3, false);
 
-        require(!boolContainer.get(0));
-        require(boolContainer.get(1));
-        require(boolContainer.get(2));
-        require(!boolContainer.get(3));
+        assertGetBool(0, false);
+        assertGetBool(1, true);
+        assertGetBool(2, true);
+        assertGetBool(3, false);
 
         require(!boolContainer.pop());
         require(boolContainer.pop());

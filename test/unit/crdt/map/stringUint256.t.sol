@@ -6,6 +6,17 @@ import "../../../../contracts/multiprocess/Multiprocess.sol";
 
 contract StringUint256MapTest {
     StringUint256Map map = new StringUint256Map();
+
+    function assertGet(string memory key, uint256 expected) internal {
+        (uint256 value, bool ok) = map.get(key);
+        require(ok && value == expected);
+    }
+
+    function assertValueAt(uint256 idx, uint256 expected) internal {
+        (uint256 value, bool ok) = map.valueAt(idx);
+        require(ok && value == expected);
+    }
+
     function testBasic() public {     
         string memory k1 = "0x33333378901234567890123456789012345678900x3333337890123456789012345678901234567890";
         string memory k2 = "0x123";
@@ -23,13 +34,13 @@ contract StringUint256MapTest {
         require(map.exist(k3)); 
         require(!map.exist(k4)); 
 
-        require(map.get(k1) == 11); 
-        require(map.get(k2) == 22); 
-        require(map.get(k3) == 33); 
+        assertGet(k1, 11); 
+        assertGet(k2, 22); 
+        assertGet(k3, 33); 
 
-        require(map.valueAt(0) == 11); 
-        require(map.valueAt(1) == 22); 
-        require(map.valueAt(2) == 33); 
+        assertValueAt(0, 11);
+        assertValueAt(1, 22);
+        assertValueAt(2, 33);
 
         require(keccak256(bytes(map.keyAt(0))) == keccak256(bytes(k1))); 
         require(keccak256(bytes(map.keyAt(1))) == keccak256(bytes(k2))); //  cause error

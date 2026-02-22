@@ -31,16 +31,15 @@ contract Bytes is Base {
     /**
      * @notice Retrieve the bytes data element at the given index from the concurrent array.
      * @param idx The index of the bytes data element to retrieve.
-     * @return The bytes data element stored at the given index.
+     * @return value The bytes data element stored at the given index.
+     * @return success True if the element exists, false otherwise.
      */
-    function get(uint256 idx) public virtual returns(bytes memory)  { 
+    function get(uint256 idx) public virtual returns(bytes memory value, bool success)  { 
         (bool exist,bytes memory data) = Base._get(idx);
-        if(exist)
-            return data;  
-        else{
-            bytes memory tmpData;
-            return tmpData;
+        if (exist) {
+            return (data, true);
         }
+        return (new bytes(0), false);
     }
 
     /**

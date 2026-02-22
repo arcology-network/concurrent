@@ -6,6 +6,22 @@ import "../../../../contracts/crdt/map/AddressU256Cum.sol";
 
 contract AddressU256CumMapTest {
     AddressU256CumMap map = new AddressU256CumMap();
+
+    function assertGet(address key, uint256 expected) internal {
+        (uint256 value, bool ok) = map.get(key);
+        require(ok && value == expected);
+    }
+
+    function assertValueAt(uint256 idx, uint256 expected) internal {
+        (uint256 value, bool ok) = map.valueAt(idx);
+        require(ok && value == expected);
+    }
+
+    function assertValueAtMissing(uint256 idx) internal {
+        (, bool ok) = map.valueAt(idx);
+        require(!ok);
+    }
+
     function testInitialState() public {     
         address addr1 = 0x1111111110123456789012345678901234567890;
         address addr2 = 0x2222222220123456789012345678901234567890;
@@ -20,7 +36,8 @@ contract AddressU256CumMapTest {
         require(map.nonNilCount() == 3); 
 
         (address k, uint256 idx, uint256 v) = map.min();
-        require(idx == 0 && v == 0 && map.get(k) == v);
+        assertGet(k, v);
+        require(idx == 0 && v == 0);
 
         map.set(addr2, 31, 0, 1000);
         (k, idx, v) = map.max();
@@ -35,9 +52,9 @@ contract AddressU256CumMapTest {
         require(map.exist(addr3)); 
         require(!map.exist(addr4)); 
 
-        require(map.get(addr1) == 0); 
-        require(map.get(addr2) == 31); 
-        require(map.get(addr3) == 32); 
+        assertGet(addr1, 0); 
+        assertGet(addr2, 31); 
+        assertGet(addr3, 32); 
         require(!map.exist(addr4)); 
 
         require(map.keyAt(0) == addr1);
@@ -54,37 +71,37 @@ contract AddressU256CumMapTest {
         map.set(addr3, 310);
         require(map.nonNilCount() == 3); 
 
-        // require(map.valueAt(0) == 110); 
-        // require(map.valueAt(1) == 210); 
-        // require(map.valueAt(2) == 310); 
+        // assertValueAt(0, 110);
+        // assertValueAt(1, 210);
+        // assertValueAt(2, 310);
 
         // map.resetByInd(0);
         // map.resetByInd(1);
         // map.resetByInd(2);
 
-        // require(map.valueAt(0) == 0); 
-        // require(map.valueAt(1) == 0); 
-        // require(map.valueAt(2) == 0); 
+        // assertValueAtMissing(0);
+        // assertValueAtMissing(1);
+        // assertValueAtMissing(2);
         // require(map.nonNilCount() == 3); 
 
 
         // map.set(addr1, 410);  
         // map.set(addr2, 510);
         // map.set(addr3, 610);
-        // require(map.valueAt(0) == 410); 
-        // require(map.valueAt(1) == 510); 
-        // require(map.valueAt(2) == 610); 
+        // assertValueAt(0, 410);
+        // assertValueAt(1, 510);
+        // assertValueAt(2, 610);
 
         // map.resetByKey(addr1);
         // map.resetByKey(addr2);
         // map.resetByKey(addr3);
 
-        // require(map.valueAt(0) == 0); 
-        // require(map.valueAt(1) == 0); 
-        // require(map.valueAt(2) == 0); 
+        // assertValueAtMissing(0);
+        // assertValueAtMissing(1);
+        // assertValueAtMissing(2);
 
-        // require(map.get(addr1) == 0); 
-        // require(map.get(addr2) == 0); 
-        // require(map.get(addr3) == 0); 
+        // assertGet(addr1, 0);
+        // assertGet(addr2, 0);
+        // assertGet(addr3, 0);
     }
 }

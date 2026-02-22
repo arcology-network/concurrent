@@ -31,14 +31,15 @@ contract String is Base {
     /**
      * @notice Retrieve the string data element at the given index from the concurrent array.
      * @param idx The index of the string data element to retrieve.
-     * @return The string data element stored at the given index.
+     * @return value The string data element stored at the given index.
+     * @return success True if the element exists, false otherwise.
      */
-    function get(uint256 idx) public virtual returns(string memory)  {
+    function get(uint256 idx) public virtual returns(string memory value, bool success)  {
         (bool exist,bytes memory data) = Base._get(idx);
-        if(exist)
-            return string(data);
-        else
-            return string("");
+        if (exist) {
+            return (string(data), true);
+        }
+        return ("", false);
     }
 
     /**

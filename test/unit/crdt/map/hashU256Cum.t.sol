@@ -6,6 +6,11 @@ import "../../../../contracts/crdt/map/HashU256Cum.sol";
 contract HashU256MapTest {
     HashU256Map container = new HashU256Map();
 
+    function assertGet(bytes32 key, uint256 expected) internal {
+        (uint256 value, bool ok) = container.get(key);
+        require(ok && value == expected);
+    }
+
     function testSetup() public {     
         bytes32 hash1 = keccak256(abi.encodePacked("0"));
         bytes32 hash2 = keccak256(abi.encodePacked("1"));
@@ -16,18 +21,18 @@ contract HashU256MapTest {
         container.set(hash2, 19, 18, 112);                
         container.set(hash3, 20, 19, 113);
 
-        require(container.get(hash1) == 18);
-        require(container.get(hash2) == 19);
-        require(container.get(hash3) == 20);
+        assertGet(hash1, 18);
+        assertGet(hash2, 19);
+        assertGet(hash3, 20);
         require(container.nonNilCount() == 3);
 
         container.set(hash1, 1); // Set delta to 1
         container.set(hash2, 1); // Set delta to 1
         container.set(hash3, 1); // Set delta to 1 
 
-        require(container.get(hash1) == 19);
-        require(container.get(hash2) == 20);
-        require(container.get(hash3) == 21);
+        assertGet(hash1, 19);
+        assertGet(hash2, 20);
+        assertGet(hash3, 21);
 
         container.del(hash1);
         require(container.nonNilCount() == 2);
@@ -37,15 +42,14 @@ contract HashU256MapTest {
         require(container.nonNilCount() == 2);
 
         container.set(hash1, 38, 27, 111);
-        require(container.get(hash1) == 38);
+        assertGet(hash1, 38);
         require(container.nonNilCount() == 3);
 
         container.set(hash1, 1); // Set delta to 1
 
         // container.resetByInd(1);
-        require(container.get(hash2) == 20);
+        assertGet(hash2, 20);
 
         container.set(hash4, 20, 0, 113);    
     }
 }
-

@@ -35,13 +35,14 @@ contract U256Map is Base {
      * @notice Get the value associated with a given key in the map.
      * @param key The uint256 key to retrieve the associated value.
      * @return value The uint256 value associated with the key.
+     * @return success True if the key exists, false otherwise.
      */
-    function get(uint256 key) public virtual returns(uint256 value){    
+    function get(uint256 key) public virtual returns(uint256 value, bool success){    
         (bool exist,bytes memory data)= Base._get(abi.encodePacked(key));
-        if(exist)
-            return uint256(abi.decode(data, (bytes32)));
-        else
-            return uint256(0);
+        if (exist) {
+            return (uint256(abi.decode(data, (bytes32))), true);
+        }
+        return (uint256(0), false);
     }    
 
     /**
@@ -56,14 +57,15 @@ contract U256Map is Base {
     /**
      * @notice Retrieves the value stored at the specified index.
      * @param idx The index of the element to retrieve.
-     * @return value The value retrieved from the storage array at the given index.    
+     * @return value The value retrieved from the storage array at the given index.
+     * @return success True if the index exists, false otherwise.
      */
-    function valueAt(uint256 idx) public virtual returns(uint256 value){ 
-        (bool exist,bytes memory data)=Base._get(idx);
-        if(exist)
-            return  uint256(abi.decode(data, (bytes32)));
-        else
-            return uint256(0);
+    function valueAt(uint256 idx) public virtual returns(uint256 value, bool success){ 
+        (bool ok, bytes memory data) = Base._get(idx);
+        if (ok && data.length > 0) {
+            return (uint256(abi.decode(data, (bytes32))), true);
+        }
+        return (uint256(0), false);
     }  
 
     /**

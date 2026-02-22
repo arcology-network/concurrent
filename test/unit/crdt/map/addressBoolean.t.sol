@@ -7,6 +7,16 @@ import "../../../../contracts/multiprocess/Multiprocess.sol";
 contract AddressBooleanMapConcurrentTest {
     AddressBooleanMap map = new AddressBooleanMap();
 
+    function assertGet(address key, bool expected) internal {
+        (bool value, bool ok) = map.get(key);
+        require(ok && value == expected);
+    }
+
+    function assertValueAt(uint256 idx, bool expected) internal {
+        (bool value, bool ok) = map.valueAt(idx);
+        require(ok && value == expected);
+    }
+
     function testCall() public {     
         address addr1 = 0x1111111110123456789012345678901234567890;
         address addr2 = 0x2222222220123456789012345678901234567890;
@@ -22,13 +32,13 @@ contract AddressBooleanMapConcurrentTest {
         require(map.exist(addr3)); 
         require(!map.exist(addr4)); 
 
-        require(map.get(addr1) == true); 
-        require(map.get(addr2) == true); 
-        require(map.get(addr3) == true); 
+        assertGet(addr1, true); 
+        assertGet(addr2, true); 
+        assertGet(addr3, true); 
 
-        require(map.valueAt(0) == true); 
-        require(map.valueAt(1) == true); 
-        require(map.valueAt(2) == true); 
+        assertValueAt(0, true);
+        assertValueAt(1, true);
+        assertValueAt(2, true);
 
         require(map.keyAt(0) == addr1); 
         require(map.keyAt(1) == addr2); 
@@ -44,4 +54,3 @@ contract AddressBooleanMapConcurrentTest {
         map.set(v, true);
     }
 }
-

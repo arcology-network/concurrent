@@ -31,14 +31,15 @@ contract Bool is Base {
     /**
      * @notice Retrieve the boolean element at the given index from the concurrent array.
      * @param idx The index of the boolean element to retrieve.
-     * @return The boolean element stored at the given index.
+     * @return value The boolean element stored at the given index.
+     * @return success True if the element exists, false otherwise.
      */
-    function get(uint256 idx) public virtual returns(bool)  {
+    function get(uint256 idx) public virtual returns(bool value, bool success)  {
         (bool exist,bytes memory data) = Base._get(idx);
-        if(exist)
-            return abi.decode(data, (bool));  
-        else
-            return false;
+        if (exist) {
+            return (abi.decode(data, (bool)), true);
+        }
+        return (false, false);
     }
 
     /**

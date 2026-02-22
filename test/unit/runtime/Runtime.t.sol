@@ -2,7 +2,6 @@
 pragma solidity >=0.7.0;
 
 import "../../../contracts/runtime/Runtime.sol";
-import "../../../contracts/runtime/Debug.sol";
 import "../../../contracts/multiprocess/Multiprocess.sol";
 import "../../../contracts/crdt/scalar/U256Cum.sol";
 
@@ -13,7 +12,7 @@ contract DeferredTest  {
         Runtime.defer("testInit()", 500222);  
     }
 
-    function testInit() public {
+    function testInit() public view{
         require(!Runtime.isInDeferred());
     }
 }
@@ -34,17 +33,19 @@ contract SequentializerTest  {
 
         // The testInit() function of the current contract cannot be called in parallel with 
         // the otherFuncs functions of the addr1 contract.
-        parallelismOk = Runtime.setParallelism("testInit()", addr1, otherFuncs, 1);
+        parallelismOk = Runtime.setSequentialOnly("testInit()", addr1, otherFuncs);
         deferOk = Runtime.defer("testInit()", 600000);
     }
 
-    function testSetup() public {
+    function testSetup() public view{
         require(parallelismOk);
         require(deferOk);
     }
 
     function testInit() public {}
+
     function testSeq() public {}
+
     function testDef() public {}
 }
 
@@ -62,24 +63,19 @@ contract ParallizerTest  {
         otherFuncs[1] = 0x02020202;   
         otherFuncs[2] = 0x03030303;       
 
-        // Only the testInit() function of the current contract can be called in parallel with the others.
-        parallelismOk = Runtime.setParallelism("testInit()", addr1, otherFuncs, 2);
+        // The testInit() function of the current contract cannot be called in parallel with the others.
+        parallelismOk = Runtime.setSequentialOnly("testInit()", addr1, otherFuncs);
         deferOk = Runtime.defer("testDef()", 111);
     }
 
-    function testSetup() public {
+    function testSetup() public view{
         require(parallelismOk);
         require(deferOk);
     }
 
     function testInit() public {}
-    function testSeq() public {}
-    function testDef() public {}
-}
 
-contract PrintTest  {
-    function testPrint() public {
-        // Runtime.print();
-        Debug.print("Test");
-    }
+    function testSeq() public {}
+
+    function testDef() public {}
 }

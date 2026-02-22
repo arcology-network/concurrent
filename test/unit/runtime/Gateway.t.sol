@@ -3,7 +3,6 @@ pragma solidity >=0.7.0;
 
 import "../../../contracts/runtime/Gateway.sol";
 import "../../../contracts/runtime/Runtime.sol";
-import "../../../contracts/runtime/Debug.sol";
 import "../../../contracts/crdt/array/Bytes.sol";
 
 contract ConcurrentGatewayTest {

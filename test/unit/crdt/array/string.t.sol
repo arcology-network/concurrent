@@ -5,6 +5,11 @@ import "../../../../contracts/crdt/array/String.sol";
 
 contract StringTest {
     String container = new String();
+
+    function assertGet(uint256 idx, string memory expected) internal {
+        (string memory value, bool ok) = container.get(idx);
+        require(ok && keccak256(bytes(value)) == keccak256(bytes(expected)));
+    }
     
     function testInitialState() public {     
         require(container.nonNilCount() == 0); 
@@ -20,20 +25,20 @@ contract StringTest {
         container.push(str3);
         require(container.nonNilCount() == 4); 
 
-        require(keccak256(bytes(container.get(0))) == keccak256(bytes(str0)));
-        require(keccak256(bytes(container.get(1))) == keccak256(bytes(str1)));
-        require(keccak256(bytes(container.get(2))) == keccak256(bytes(str2)));
-        require(keccak256(bytes(container.get(3))) == keccak256(bytes(str3)));
+        assertGet(0, str0);
+        assertGet(1, str1);
+        assertGet(2, str2);
+        assertGet(3, str3);
 
         container.set(0, str3);
         container.set(1, str2);
         container.set(2, str1);
         container.set(3, str0);
 
-        require(keccak256(bytes(container.get(3))) == keccak256(bytes(str0)));
-        require(keccak256(bytes(container.get(2))) == keccak256(bytes(str1)));
-        require(keccak256(bytes(container.get(1))) == keccak256(bytes(str2)));
-        require(keccak256(bytes(container.get(0))) == keccak256(bytes(str3)));
+        assertGet(3, str0);
+        assertGet(2, str1);
+        assertGet(1, str2);
+        assertGet(0, str3);
 
         require(keccak256(bytes(container.pop())) == keccak256(bytes(str0)));
         require(keccak256(bytes(container.pop())) == keccak256(bytes(str1)));

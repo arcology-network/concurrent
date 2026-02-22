@@ -31,14 +31,15 @@ contract Int256 is Base {
     /**
      * @notice Retrieve the int256 data element at the given index from the concurrent array.
      * @param idx The index of the int256 data element to retrieve.
-     * @return The int256 data element stored at the given index.
+     * @return value The int256 data element stored at the given index.
+     * @return success True if the element exists, false otherwise.
      */
-    function get(uint256 idx) public virtual returns(int256)  {
+    function get(uint256 idx) public virtual returns(int256 value, bool success)  {
         (bool exist,bytes memory data) = Base._get(idx);
-        if(exist)
-            return abi.decode(data, (int256));  
-        else
-            return int256(0);  
+        if (exist) {
+            return (abi.decode(data, (int256)), true);
+        }
+        return (int256(0), false);
     }
 
     /**

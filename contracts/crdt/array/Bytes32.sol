@@ -31,16 +31,15 @@ contract Bytes32 is Base {
     /**
      * @notice Retrieve the bytes32 data element at the given index from the concurrent array.
      * @param idx The index of the bytes32 data element to retrieve.
-     * @return The bytes32 data element stored at the given index.
+     * @return value The bytes32 data element stored at the given index.
+     * @return success True if the element exists, false otherwise.
      */
-    function get(uint256 idx) public virtual returns(bytes32)  {
+    function get(uint256 idx) public virtual returns(bytes32 value, bool success)  {
         (bool exist,bytes memory data)=Base._get(idx);
-        if(exist)
-            return abi.decode(data, (bytes32));
-        else{
-            bytes32 defaultVal;
-            return defaultVal;
+        if (exist) {
+            return (abi.decode(data, (bytes32)), true);
         }
+        return (bytes32(0), false);
     }
 
     /**

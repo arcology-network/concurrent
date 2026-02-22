@@ -5,6 +5,11 @@ import "../../../../contracts/crdt/array/Bool.sol";
 
 contract BoolTest {
     Bool boolContainer = new Bool();
+
+    function assertGet(uint256 idx, bool expected) internal {
+        (bool value, bool ok) = boolContainer.get(idx);
+        require(ok && value == expected);
+    }
     
     function setUp() public {     
         require(boolContainer.nonNilCount() == 0); 
@@ -15,20 +20,20 @@ contract BoolTest {
         boolContainer.push(true);
         require(boolContainer.nonNilCount() == 4); 
 
-       require(boolContainer.get(0));
-        require(!boolContainer.get(1));
-        require(!boolContainer.get(2));
-        require(boolContainer.get(3));
+        assertGet(0, true);
+        assertGet(1, false);
+        assertGet(2, false);
+        assertGet(3, true);
 
         boolContainer.set(0, false);
         boolContainer.set(1, true);
         boolContainer.set(2, true);
         boolContainer.set(3, false);
 
-        require(!boolContainer.get(0));
-        require(boolContainer.get(1));
-        require(boolContainer.get(2));
-        require(!boolContainer.get(3));
+        assertGet(0, false);
+        assertGet(1, true);
+        assertGet(2, true);
+        assertGet(3, false);
 
         require(!boolContainer.pop());
         require(boolContainer.pop());

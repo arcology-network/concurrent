@@ -6,12 +6,17 @@ import "../../../../contracts/crdt/array/U256Cum.sol";
 contract U256CumArrayTest {
     U256Cum container = new U256Cum();
 
+    function assertGet(uint256 idx, uint256 expected) internal {
+        (uint256 value, bool ok) = container.get(idx);
+        require(ok && value == expected);
+    }
+
     function testInitialState() public {    
         require(container.push(17, 17, 111)); 
         require(container.push(111, 17, 111)); 
 
-        require(container.get(0) == 17);
-        require(container.get(1) == 111);
+        assertGet(0, 17);
+        assertGet(1, 111);
 
         require(container.nonNilCount() == 2);
         container.clear();
@@ -23,18 +28,18 @@ contract U256CumArrayTest {
       
         require(container.nonNilCount() == 3);
 
-        require(container.get(2) == 18);
-        require(container.get(3) == 19);
-        require(container.get(4) == 20);
+        assertGet(2, 18);
+        assertGet(3, 19);
+        assertGet(4, 20);
 
         require(container.set(2, 1));
-        require(container.get(2) == 19);
+        assertGet(2, 19);
 
         require(container.set(3, -1));
-        require(container.get(3) == 18);      
+        assertGet(3, 18);      
 
         require(!container.set(4, -3)); // Won't change the value, because the value is out of range
-        require(container.get(4) == 20);  
+        assertGet(4, 20);  
 
         // require(!container.set(0, -1)); // Must fail, because the value is out of range
         // require(container.get(0) == 17);  // The value should not be changed

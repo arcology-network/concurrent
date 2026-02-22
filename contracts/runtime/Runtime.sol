@@ -39,12 +39,12 @@ library Runtime {
     }
 
     /**
-     * @notice Set the max parallelism level for a specific function with respect to other functions.
-     * @param others The list of function signatures and their contract address that can be executed in parallel.
+     * @notice Mark a function as sequential-only with respect to other functions.
+     * @param others The list of function signatures and their contract address that cannot be executed in parallel.
     */
-    function setParallelism(string memory funcName, address addr, bytes4[] memory others, uint64 parallelism) internal returns(bool) {
+    function setSequentialOnly(string memory funcName, address addr, bytes4[] memory others) internal returns(bool) {
         bytes4 funSign = bytes4(keccak256(bytes(funcName)));
-        (bool success,) = _call(abi.encodeWithSignature("setParallelism(bytes4,address,bytes4[],uint64)", funSign, addr, others, parallelism));
+        (bool success,) = _call(abi.encodeWithSignature("setSequentialOnly(bytes4,address,bytes4[])", funSign, addr, others));
         return success;
     }
  

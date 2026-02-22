@@ -5,6 +5,11 @@ import "../../../../contracts/crdt/array/U256.sol";
 
 contract U256Test {
     U256 container = new U256();
+
+    function assertGet(uint256 idx, uint256 expected) internal {
+        (uint256 value, bool ok) = container.get(idx);
+        require(ok && value == expected);
+    }
     U256[] array;
 
     function testInitialState() public {     
@@ -22,20 +27,20 @@ contract U256Test {
         (i, v) = container.max();
         require(i == 3 && v == 40); 
 
-        require(container.get(0) == uint256(10));
-        require(container.get(1) == uint256(20));
-        require(container.get(2) == uint256(30));
-        require(container.get(3) == uint256(40));    
+        assertGet(0, uint256(10));
+        assertGet(1, uint256(20));
+        assertGet(2, uint256(30));
+        assertGet(3, uint256(40));    
 
         container.set(0, uint256(11));
         container.set(1, uint256(12));
         container.set(2, uint256(13));
         container.set(3, uint256(14));
 
-        require(container.get(0) == uint256(11));
-        require(container.get(1) == uint256(12));
-        require(container.get(2) == uint256(13));
-        require(container.get(3) == uint256(14));
+        assertGet(0, uint256(11));
+        assertGet(1, uint256(12));
+        assertGet(2, uint256(13));
+        assertGet(3, uint256(14));
 
         require(container.pop() == uint256(14));
         require(container.pop() == uint256(13));

@@ -5,6 +5,12 @@ import "../../../../contracts/crdt/array/Address.sol";
 
 contract AddressTest {
     Address container = new Address();    
+
+    function assertGet(uint256 idx, address expected) internal {
+        (address value, bool ok) = container.get(idx);
+        require(ok && value == expected);
+    }
+
     function testBasic() public {     
         require(container.nonNilCount() == 0);    
         address addr1 = 0x1111111110123456789012345678901234567890;
@@ -17,14 +23,14 @@ contract AddressTest {
 
         require(container.nonNilCount() == 2); 
 
-        require(container.get(0) == addr1);
-        require(container.get(1) == addr2);
+        assertGet(0, addr1);
+        assertGet(1, addr2);
  
         container.set(0, addr3);
         container.set(1, addr4);
 
-        require(container.get(0) == addr3);
-        require(container.get(1) == addr4);
+        assertGet(0, addr3);
+        assertGet(1, addr4);
 
         require(container.fullLength() == 2);
     }    

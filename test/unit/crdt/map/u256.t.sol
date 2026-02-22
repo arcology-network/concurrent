@@ -7,14 +7,25 @@ import "../../../../contracts/multiprocess/Multiprocess.sol";
 
 contract U256MapTest {
     U256Map map = new U256Map();
+
+    function assertGet(uint256 key, uint256 expected) internal {
+        (uint256 value, bool ok) = map.get(key);
+        require(ok && value == expected);
+    }
+
+    function assertValueAt(uint256 idx, uint256 expected) internal {
+        (uint256 value, bool ok) = map.valueAt(idx);
+        require(ok && value == expected);
+    }
+
     function testInitialState() public {     
         require(map.nonNilCount() == 0); 
         map.set(10, 100);
         map.set(11, 111);
         require(map.nonNilCount() == 2); 
 
-        require(map.valueAt(0) == 100); 
-        require(map.valueAt(1) == 111); 
+        assertValueAt(0, 100);
+        assertValueAt(1, 111);
 
         require(map.keyAt(0) == 10); 
         require(map.keyAt(1) == 11); 
@@ -23,8 +34,8 @@ contract U256MapTest {
         require(map.exist(10)); 
         require(map.exist(11)); 
 
-        require(map.get(11) == 111);       
-        require(map.get(10) == 100); 
+        assertGet(11, 111);       
+        assertGet(10, 100); 
 
         map.del(10);
         require(map.nonNilCount() == 1); 

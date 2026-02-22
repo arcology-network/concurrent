@@ -31,14 +31,15 @@ contract U256 is Base {
     /**
      * @notice Retrieve the uint256 data element at the given index from the concurrent array.
      * @param idx The index of the uint256 data element to retrieve.
-     * @return The uint256 data element stored at the given index.
+     * @return value The uint256 data element stored at the given index.
+     * @return success True if the element exists, false otherwise.
      */
-    function get(uint256 idx) public returns(uint256)  {
+    function get(uint256 idx) public returns(uint256 value, bool success)  {
         (bool exist,bytes memory data)=Base._get(idx);
-        if(exist)
-            return uint256(abi.decode(data, (bytes32)));
-        else
-            return uint256(0);
+        if (exist) {
+            return (uint256(abi.decode(data, (bytes32))), true);
+        }
+        return (uint256(0), false);
     }
 
     /**

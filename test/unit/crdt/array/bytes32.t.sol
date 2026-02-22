@@ -5,6 +5,11 @@ import "../../../../contracts/crdt/array/Bytes32.sol";
 
 contract Bytes32Test {
     Bytes32 container = new Bytes32();
+
+    function assertGet(uint256 idx, bytes32 expected) internal {
+        (bytes32 value, bool ok) = container.get(idx);
+        require(ok && value == expected);
+    }
     
     function testInitialState() public {     
         require(container.nonNilCount() == 0); 
@@ -20,20 +25,20 @@ contract Bytes32Test {
         container.push(hash3);
         require(container.nonNilCount() == 4);
 
-        require(container.get(0) == hash0);
-        require(container.get(1) == hash1);
-        require(container.get(2) == hash2);
-        require(container.get(3) == hash3);
+        assertGet(0, hash0);
+        assertGet(1, hash1);
+        assertGet(2, hash2);
+        assertGet(3, hash3);
 
         container.set(0, hash3);
         container.set(1, hash2);
         container.set(2, hash1);
         container.set(3, hash0);
 
-        require(container.get(0) == hash3);
-        require(container.get(1) == hash2);
-        require(container.get(2) == hash1);
-        require(container.get(3) == hash0);
+        assertGet(0, hash3);
+        assertGet(1, hash2);
+        assertGet(2, hash1);
+        assertGet(3, hash0);
 
         require(container.pop() == hash0);
         require(container.pop() == hash1);

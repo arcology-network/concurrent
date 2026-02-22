@@ -35,13 +35,14 @@ contract StringUint256Map is Base {
      * @notice Get the value associated with a given key in the map.
      * @param k The string key to retrieve the associated value.
      * @return value The string value associated with the key.
+     * @return success True if the key exists, false otherwise.
      */
-    function get(string memory k) public virtual returns(uint256 value){ 
-        (bool exist,bytes memory data)=Base._get(bytes(k));
-        if(exist)
-            return uint256(abi.decode(data, (bytes32)));     
-        else
-            return uint256(0);
+    function get(string memory k) public virtual returns(uint256, bool){ 
+        (bool found,bytes memory data) = Base._get(bytes(k));
+        if (found) {
+            return (uint256(abi.decode(data, (bytes32))), true);
+        }
+        return (uint256(0), false);
     }    
 
     /**
@@ -56,14 +57,15 @@ contract StringUint256Map is Base {
     /**
      * @notice Retrieves the value stored at the specified index.
      * @param idx The index of the element to retrieve.
-     * @return value The value retrieved from the storage array at the given index.    
+     * @return value The value retrieved from the storage array at the given index.
+     * @return success True if the index exists, false otherwise.
     */
-    function valueAt(uint256 idx) public virtual returns(uint256 value){ 
-        (bool exist,bytes memory data)=Base._get(idx);
-        if(exist)
-            return uint256(abi.decode(data,(bytes32)));  
-        else
-            return uint256(0);
+    function valueAt(uint256 idx) public virtual returns(uint256 value, bool success){ 
+        (bool ok, bytes memory data) = Base._get(idx);
+        if (ok && data.length > 0) {
+            return (uint256(abi.decode(data, (bytes32))), true);
+        }
+        return (uint256(0), false);
     }    
 
     /**

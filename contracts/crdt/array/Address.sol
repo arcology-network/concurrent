@@ -36,18 +36,20 @@ contract Address is Base {
     /**
      * @notice Retrieve the address element at the given index from the concurrent array.
      * @param idx The index of the address element to retrieve.
-     * @return The address element stored at the given index.
+     * @return value The address element stored at the given index.
+     * @return success True if the element exists, false otherwise.
      */
     
-    function get(uint256 idx) public returns(address)  {
+    function get(uint256 idx) public returns(address value, bool success)  {
         (bool exist,bytes memory rawdata)=Base._get(idx);
-        bytes20 resultAdr;
-        if(exist){
-            for (uint i = 0; i < 20; i++) {
-                resultAdr |= bytes20(rawdata[i]) >> (i * 8); 
-            }
+        if (!exist) {
+            return (address(0), false);
         }
-        return address(uint160(resultAdr)); 
+        bytes20 resultAdr;
+        for (uint i = 0; i < 20; i++) {
+            resultAdr |= bytes20(rawdata[i]) >> (i * 8); 
+        }
+        return (address(uint160(resultAdr)), true);
     }
 
     /**
@@ -59,4 +61,3 @@ contract Address is Base {
         Base._set(idx, abi.encodePacked(elem));
     }
 }
-
