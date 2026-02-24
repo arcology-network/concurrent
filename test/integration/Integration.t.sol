@@ -35,28 +35,27 @@ contract Integration {
     // Initialize baseline state and schedule a deferred push.
     constructor() {
         number = 11;
-        Runtime.defer("testDeferrablePush(uint256)", 100000);  
+        Runtime.defer("deferrablePush(uint256)", 100000);  
     }
-
     
     // Sanity check: constructing a fresh U256 container succeeds.
-    function testContainerInitialization() external {
+    function containerInitialization() external {
         U256 anotherArray2 = new U256();
     }
 
     // Run two push jobs concurrently and verify array contents/length.
-    function testMultiprocess() external {
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testPush(uint256)", 0)); // Will require about 1.5M gas
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testPush(uint256)", 1));
+    function multiprocessPush() external {
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("push(uint256)", 0)); // Will require about 1.5M gas
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("push(uint256)", 1));
         mp.run();
 
         require(u256Array.fullLength() == 2);     
-        assertGet(1, 0);    
-        assertGet(0, 1);    
+        assertGet(0, 0);    
+        assertGet(1, 1);    
     }
 
     // Enqueue clear jobs and execute them via the multiprocess runner.
-    function testMultiprocessClear() external {
+    function multiprocessClear() external {
         mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testClearMp()")); // Will require about 1.5M gas
         mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testClearMp()"));
         mp.run(); 
@@ -64,35 +63,35 @@ contract Integration {
     }    
 
     // Enqueue run jobs and execute them via the multiprocess runner.
-    function testMultiprocessRun() external {
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testRunMp()")); // Will require about 1.5M gas
-        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testRunMp()"));
+    function multiprocessRun() external {
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("runMp()")); // Will require about 1.5M gas
+        mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("runMp()"));
         mp.run(); 
     }  
 
     // Return x plus a constant.
-    function testAddConst(uint256 x) external pure returns (uint256) {
+    function addConst(uint256 x) external pure returns (uint256) {
         return x + 42;
     }
 
     // Add x to the stored number and return the new value.
-    function testAddNum(uint256 x) external returns (uint256) {
+    function addNum(uint256 x) external returns (uint256) {
         number = number + x;
         return number;
     }
 
     // Set the stored number.
-    function testSet(uint256 x) external {
+    function set(uint256 x) external {
         number = x;
     }
 
     // Read the stored number.
-    function testGetNum() external view returns (uint256) {
+    function getNum() external view returns (uint256) {
         return number;
     }
 
     // Append a value to the U256 array.
-    function testPush(uint256 v) external {
+    function push(uint256 v) external {
         u256Array.push(v);
     }
 
@@ -102,24 +101,24 @@ contract Integration {
     }
 
     // Execute queued multiprocess jobs.
-    function testRunMp() external {
+    function runMp() external {
         mp.run();
     }
 
     // Only push when not executing in a deferred context.
-    function testDeferrablePush(uint256 v) external {
+    function deferrablePush(uint256 v) external {
         if (!Runtime.isInDeferred()) {
             u256Array.push(v);
         }
     }
 
     // Return the value and presence flag at index.
-    function testGet(uint256 index) external returns (uint256, bool) {
+    function get(uint256 index) external returns (uint256, bool) {
         return u256Array.get(index);
     }
 
     // Return the full length of the U256 array.
-    function testLength() external returns (uint256) {
+    function length() external returns (uint256) {
         return u256Array.fullLength();
     }
 }

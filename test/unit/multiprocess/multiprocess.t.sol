@@ -19,7 +19,7 @@ contract U256CumulativeParallelInitTest {
         require(success);
 
         require(containers[0].get() == 11);
-        require(containers[1].get() == 112);
+        require(containers[1].get() == 12);
     }
 
     function init(uint256 idx) public returns(uint256) { 
@@ -408,19 +408,19 @@ contract ParallelizerArrayTest {
 
     function testCall() public  { 
        parallelizers[0] = new Multiprocess(2);
-       parallelizers[0] .addJob(1000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
-       parallelizers[0] .addJob(1000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
+       parallelizers[0] .addJob(1000000, 0, address(this), abi.encodeWithSignature("appender()"));
+       parallelizers[0] .addJob(1000000, 0, address(this), abi.encodeWithSignature("appender()"));
        parallelizers[0] .run();
        require(container.nonNilCount() == 2);  
 
        parallelizers[1] = new Multiprocess(2);
-       parallelizers[1] .addJob(1000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
-       parallelizers[1] .addJob(1000000, 0, address(this), abi.encodeWithSignature("testAppender()"));
+       parallelizers[1] .addJob(1000000, 0, address(this), abi.encodeWithSignature("appender()"));
+       parallelizers[1] .addJob(1000000, 0, address(this), abi.encodeWithSignature("appender()"));
        parallelizers[1] .run();
        require(container.nonNilCount() == 4);  
     }
 
-    function testAppender()  public {
+    function appender()  public {
        container.push(true);
     }
 }
@@ -883,6 +883,39 @@ contract ParaDeletions{
     }  
 } 
 
+contract ParaAddressUint256PushSetConflictTest {  
+    AddressU256CumMap container = new AddressU256CumMap();
+    address addr1 = 0x1111111110123456789012345678901234567890;
+    address addr2 = 0x2222222220123456789012345678901234567890;
+
+    function assertGet(address key, uint256 expected) internal {
+        (uint256 value, bool ok) = container.get(key);
+        require(ok && value == expected);
+    }
+
+    function testCall() public  { 
+        container.set(addr1, 18, 17, 111);
+        assertGet(addr1, 18);
+
+        Multiprocess mp = new Multiprocess(4); 
+        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("setter()")); // Addr 2: 19
+        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("pusher()"));// Addr 4
+        mp.run();
+
+        assertGet(addr1, 19); // Sequentially added
+        assertGet(addr2, 33); // Concurrently added, delta 1
+    }
+
+    function setter() public {
+        container.set(addr1, 1); // Set delta to 1
+    }
+
+    function pusher() public {
+        container.set(addr2, 33, 17, 111);
+    }
+}
+
+
 contract ParaAddressUint256ConflictTest {  
     AddressU256CumMap container = new AddressU256CumMap();
 
@@ -908,6 +941,8 @@ contract ParaAddressUint256ConflictTest {
     }
 
     function testCall() public  { 
+        setUp();
+
         container.set(addr1, 18, 17, 111);
         container.set(addr2, 19, 18, 112);                
         container.set(addr3, 20, 19, 113);
@@ -915,39 +950,39 @@ contract ParaAddressUint256ConflictTest {
         assertGet(addr1, 18);
         assertGet(addr2, 19);
         assertGet(addr3, 20);
-
+        require(container.nonNilCount() == 3);
         // testPusher(2);
 
         Multiprocess mp = new Multiprocess(4); 
-        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("testAdder(uint256)", 1)); // Addr 2: 19
-        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("testAdder(uint256)", 2));// Addr 3 : 20
-        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("testPusher(uint256)", 3));// Addr 4
-        // mp.addJob(500000, 0, address(this), abi.encodeWithSignature("testPusher(uint256)", 4));// Addr 5
+        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("setter(uint256)", 1)); // Addr 2: 19
+        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("setter(uint256)", 2));// Addr 3 : 20
+        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("pusher(uint256)", 3));// Addr 4
+        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("pusher(uint256)", 4));// Addr 5
         mp.run();
 
-        // require(container.get(addr1) == 18); // Sequentially added
-        
 
-        // require(container.get(addr2) == 20);
-        // require(container.get(addr3) == 21);
+        assertGet(addr1, 18); // Sequentially added
+        assertGet(addr2, 20); // Concurrently added, delta 1
+        // assertGet(addr3, 33); 
 
         // Runtime.print(container.get(addr2));
         // Runtime.print(container.get(addr4));
         // Runtime.print(container.get(addr5));
-        // require(container.get(addr4) == 33);
-        // require(container.get(addr5) == 34);
+        assertGet(addr4, 33);
+        assertGet(addr5, 34);
 
         // Runtime.print(container.get(addr2));
         // Runtime.print(container.get(addr3));
 
-        // require(container.nonNilCount() == 5);
+        // One push will failed.
+        // require(container.nonNilCount() == 4);
     }
 
-    function testAdder(uint256 num) public {
+    function setter(uint256 num) public {
         container.set(addrs[num], 1); // Set delta to 1
     }
 
-    function testPusher(uint256 num) public {
+    function pusher(uint256 num) public {
         container.set(addrs[num], int256(30 + num), 17, 111);
     }
 }

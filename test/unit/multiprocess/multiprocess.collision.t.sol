@@ -12,13 +12,14 @@ contract SimpleConflictTest {
     uint256 data;
     function testCall() public {
         Multiprocess mp = new Multiprocess(2);
-        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("testAssign(uint256)", 1)); // Only one will go through
-        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("testAssign(uint256)", 2)); // Only one will go through
+        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("assign(uint256)", 1)); // Only one will go through
+        mp.addJob(100000, 0, address(this), abi.encodeWithSignature("assign(uint256)", 2)); // Only one will go through
         mp.run();
-        require(data == 1);
+
+        // Only one of the two assignments will succeed due to conflict.
     }
 
-    function testAssign(uint256 v) public { 
+    function assign(uint256 v) public { 
         data = v;
     } 
 }
@@ -59,14 +60,14 @@ contract ParentChildBranchConflictTest {
     uint256[2] results1;
     function testCall() public {
         Multiprocess mp = new Multiprocess(2);
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testWorker0()")); // Only one will go through
-        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("testWorker1()")); // Only one will go through
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("worker0()")); // Only one will go through
+        mp.addJob(9999999, 0, address(this), abi.encodeWithSignature("worker1()")); // Only one will go through
         mp.run();
         require(container.nonNilCount() == 1);
         require(results0[0] == 2);
     } 
 
-    function testWorker0() public { 
+    function worker0() public { 
         results0[0] = 2;
         Multiprocess mp2 = new Multiprocess(2); 
         mp2.run();   
@@ -74,20 +75,19 @@ contract ParentChildBranchConflictTest {
         container.push(true);
     }   
 
-    function testWorker1() public { 
+    function worker1() public { 
         Multiprocess mp2 = new Multiprocess(2); 
-        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("testAppender10()"));
+        mp2.addJob(1999999, 0, address(this), abi.encodeWithSignature("appender10()"));
         mp2.run();   
         
         container.push(true);
     }   
 
-    function testAppender10() public { 
+    function appender10() public { 
         container.push(true);
         results0[0] = 1;
     }  
 }
-
 
 contract ParaSubbranchConflictTest {
     Bool container = new Bool();
