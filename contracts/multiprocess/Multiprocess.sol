@@ -46,7 +46,7 @@ contract Multiprocess is Gateway(Const.BYTES, Const.MULTIPROCESSOR_ADDR, false) 
      *      of threads specified in the constructor.
      */
     function run() public returns(bool, bytes memory){       
-        (bool success, bytes memory data) = address(API).call(abi.encodeWithSignature("invoke(bytes)", abi.encodePacked(numProcesses))); 
+        (bool success, bytes memory data) = address(API).call(abi.encodeWithSignature("run(bytes)", abi.encodePacked(numProcesses))); 
         // (success,) = eval(abi.encodeWithSignature("clear()"));
         return (success, data);
     }
