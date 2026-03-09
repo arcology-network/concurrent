@@ -9,10 +9,10 @@ contract DeferredTest  {
     U256Cumulative value = new U256Cumulative(1, 100);
 
     constructor () payable {
-        Runtime.defer("testInit()", 500222);  
+        Runtime.defer("init()", 500222);  
     }
 
-    function testInit() public view{
+    function init() public view{
         require(!Runtime.isInDeferred());
     }
 }

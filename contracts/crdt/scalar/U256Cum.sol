@@ -18,7 +18,7 @@ contract U256Cumulative {
      * @param maxv The maximum bound of the cumulative value.
      */
     constructor (uint256 minv, uint256 maxv) {
-        (bool success,) = address(API).call(abi.encodeWithSignature("New(uint256, uint256, uint256)", minv, maxv));
+        (bool success,) = address(API).call(abi.encodeWithSignature("New(uint256,uint256,uint256)", minv, maxv));
         assert(success);
     }
 
