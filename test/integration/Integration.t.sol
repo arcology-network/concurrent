@@ -26,6 +26,8 @@ contract Integration {
     U256 u256Array = new U256();
     Multiprocess mp = new Multiprocess(2);
 
+    event counterQuery(uint256 value);
+
     // Helper: assert that get(idx) returns expected and is present.
     function assertGet(uint256 idx, uint256 expected) internal {
         (uint256 value, bool ok) = u256Array.get(idx);
@@ -52,14 +54,15 @@ contract Integration {
         require(u256Array.fullLength() == 2);     
         assertGet(0, 0);    
         assertGet(1, 1);    
+
+        emit counterQuery(u256Array.fullLength());
     }
 
     // Enqueue clear jobs and execute them via the multiprocess runner.
     function multiprocessClear() external {
         mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testClearMp()")); // Will require about 1.5M gas
         mp.addJob(4000000, 0, address(this), abi.encodeWithSignature("testClearMp()"));
-        mp.run(); 
-        
+        mp.run();         
     }    
 
     // Enqueue run jobs and execute them via the multiprocess runner.
@@ -93,11 +96,6 @@ contract Integration {
     // Append a value to the U256 array.
     function push(uint256 v) external {
         u256Array.push(v);
-    }
-
-    // Clear all multiprocess jobs.
-    function testClearMp() external {
-        mp.clear();
     }
 
     // Execute queued multiprocess jobs.

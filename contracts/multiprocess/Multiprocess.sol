@@ -47,12 +47,7 @@ contract Multiprocess is Gateway(Const.BYTES, Const.MULTIPROCESSOR_ADDR, false) 
      */
     function run() public returns(bool, bytes memory){       
         (bool success, bytes memory data) = address(API).call(abi.encodeWithSignature("invoke(bytes)", abi.encodePacked(numProcesses))); 
-        (success,) = eval(abi.encodeWithSignature("clear()"));
-        return (success, data);
-    }
-
-    function clear() public returns(bool, bytes memory){       
-        (bool success, bytes memory data) = eval(abi.encodeWithSignature("clear()"));
+        // (success,) = eval(abi.encodeWithSignature("clear()"));
         return (success, data);
     }
 }

@@ -175,7 +175,7 @@ abstract contract Base is Gateway{
     }
 
     /**
-     * @notice Set the data associated with the given key in the container.
+     * @notice Set the value bounds associated with the given key in the container. Only cumulative data structure uses this.
      * @param key The key associated with the data.
      * @param min The lower bound of the data to be stored.
      * @param max The upper bound of the data to be stored.
@@ -187,7 +187,7 @@ abstract contract Base is Gateway{
     }
     
     /**
-     * @notice Checks if a key exists in the the data structure. *
+     * @notice Checks if a key exists in the the data structure.
      * @param key The key to check for existence.
      * @return A boolean indicating whether the key exists in it or not.
     */
