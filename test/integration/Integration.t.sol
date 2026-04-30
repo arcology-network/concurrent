@@ -83,6 +83,11 @@ contract Integration {
         return number;
     }
 
+    // Add x to the stored number and return the new value.
+    function doNothing() external returns (uint256) {
+        return 0;
+    }
+
     // Set the stored number.
     function set(uint256 x) external {
         number = x;
