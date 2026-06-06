@@ -82,12 +82,7 @@ contract Integration {
         number = number + x;
         return number;
     }
-
-    // Add x to the stored number and return the new value.
-    function doNothing() external returns (uint256) {
-        return 0;
-    }
-
+    
     // Set the stored number.
     function set(uint256 x) external {
         number = x;
@@ -97,6 +92,9 @@ contract Integration {
     function getNum() external view returns (uint256) {
         return number;
     }
+
+    // A Placeholder function that does nothing but consume some gas.
+    function doNothing() external {}
 
     // Append a value to the U256 array.
     function push(uint256 v) external {
@@ -113,6 +111,16 @@ contract Integration {
         if (!Runtime.isInDeferred()) {
             u256Array.push(v);
         }
+    }
+
+     // Only get when not executing in a deferred context.
+    function deferrableGet(uint256 v) external returns (uint256){
+        if (Runtime.isInDeferred()) {
+           uint256 value;
+           (value, ) = u256Array.get(v);
+           return value;
+        }
+        return 0;
     }
 
     // Return the value and presence flag at index.
