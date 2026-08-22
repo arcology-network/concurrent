@@ -769,8 +769,8 @@ contract ParaRwConflictTest {
     uint256 counterCopy = 0;
     function testCall() public  { 
         Multiprocess mp = new Multiprocess(2); 
-        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("read()"));
         mp.addJob(500000, 0, address(this), abi.encodeWithSignature("write(uint256)", 11));
+        mp.addJob(500000, 0, address(this), abi.encodeWithSignature("read()"));
         mp.run();
 
   

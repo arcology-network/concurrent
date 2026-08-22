@@ -1,35 +1,27 @@
 module github.com/arcology-network/concurrent
 
-go 1.22
+go 1.23.0
 
-replace github.com/arcology-network/scheduler => ../scheduler/
-
-replace github.com/ethereum/go-ethereum v1.14.8 => github.com/arcology-network/concurrent-evm v0.0.0-20250714082425-8009ff40403f
-
-replace github.com/arcology-network/common-lib => ../common-lib/
-
-replace github.com/arcology-network/state-engine => ../state-engine/
-
-replace github.com/arcology-network/eu => ../eu/
+replace github.com/ethereum/go-ethereum => github.com/arcology-network/concurrent-evm v0.0.0-20260804020846-d6d8aea5af84
 
 require (
-	github.com/ethereum/go-ethereum v1.14.8 // indirect
+	github.com/ethereum/go-ethereum v1.16.3 // indirect
 	github.com/google/btree v1.1.3 // indirect
 	github.com/holiman/uint256 v1.2.4
 	golang.org/x/crypto v0.20.0
 	golang.org/x/exp v0.0.0-20231206192017-f3f8817b8deb // indirect
 )
 
-require github.com/arcology-network/eu v0.0.0-20251120074218-61d6338660c7
+require github.com/arcology-network/eu v0.0.0-20260630084628-0f86cc6b6a2d
 
 require (
 	github.com/AndreasBriese/bbloom v0.0.0-20190825152654-46b345b51c96 // indirect
 	github.com/DataDog/zstd v1.5.5 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/VictoriaMetrics/fastcache v1.12.2 // indirect
-	github.com/arcology-network/common-lib v1.9.1-0.20251120015519-6d5bd03457e7 // indirect
-	github.com/arcology-network/scheduler v0.0.0-20251120020001-8bead9c27c6b // indirect
-	github.com/arcology-network/state-engine v1.9.1-0.20251120015712-bc8ca7726bfb // indirect
+	github.com/arcology-network/common-lib v1.9.1-0.20260618021700-0214ff3b2803 // indirect
+	github.com/arcology-network/scheduler v0.0.0-20260630083412-4402b379f31b // indirect
+	github.com/arcology-network/state-engine v1.9.1-0.20260630082036-293370bad172 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bits-and-blooms/bitset v1.10.0 // indirect
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
